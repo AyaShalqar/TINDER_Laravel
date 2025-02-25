@@ -16,9 +16,13 @@ class Profile extends Model
         'interests',
         'photo'
     ];
-    
+
     protected $casts = [
         'interests' => 'array', 
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 }
