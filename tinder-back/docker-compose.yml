@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: tinder_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: tinder_db
+      POSTGRES_USER: tinder_user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Хранилище для БД
+
+volumes:
+  postgres_data:  # <-- ЭТО ДОЛЖНО БЫТЬ
