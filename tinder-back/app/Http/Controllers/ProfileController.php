@@ -8,7 +8,13 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        return response()->json($request->user()->profile);
+        $profile = $request->user()->profile;
+        
+        if (!$profile) {
+            return response()->json(['message' => 'Profile not found'], 404);
+        }
+        
+        return response()->json($profile);
     }
 
     public function update(Request $request)

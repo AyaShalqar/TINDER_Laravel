@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Если вы действительно хотите удалить таблицу users, раскомментируйте следующую строку
+        // Schema::dropIfExists('users');
+        
+        // Если вы хотите добавить remember_token в таблицу users
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable();
         });
     }
 
@@ -22,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn(['remember_token', 'email_verified_at']);
         });
     }
 };
