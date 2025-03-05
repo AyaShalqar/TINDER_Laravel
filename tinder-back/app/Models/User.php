@@ -11,48 +11,38 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    use HasFactory;
+    
     protected $fillable = [
         'name',
+        'phone_number',
         'email',
-        'password',
+        'gender',
+        'sexual_orientation',
+        'birth_date',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function userBio():HasOne
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasOne(UserBio::class);
+    }
+    public function images():HasMany
+    {
+        return $this->hasMany(UserImages::class);
     }
 
-    /**
-     * Get the profile associated with the user.
-     */
-    public function profile(): HasOne
+    public function userInterested():HasMany
     {
-        return $this->hasOne(Profile::class);
+        return $this->hasMany(UserInterested::class);
     }
+    public function interests(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Interest::class,
+            'user_interested',
+            'user_id',
+            'interest_id'
+        );
+    }
+    
 }
