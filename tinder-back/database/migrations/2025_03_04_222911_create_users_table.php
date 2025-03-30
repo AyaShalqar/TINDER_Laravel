@@ -16,9 +16,12 @@ return new class extends Migration
             $table->string('name')->unique()->index();
             $table->string('phone_number')->unique()->index();
             $table->string('email')->unique()->index();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('gender')->index()->nullable();
             $table->string('sexual_orientation')->nullable()->index();
             $table->date('birth_date')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест регистрации</title>
+</head>
+<body>
+    <h1>Форма регистрации</h1>
+    
+    <div id="response"></div>
+
+    <form id="registerForm">
+        <div>
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" value="Иван Петров" required>
+        </div>
+        <div>
+            <label for="phone_number">Телефон:</label>
+            <input type="text" id="phone_number" name="phone_number" value="+7 (999) 123-45-67" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="ivan@example.com" required>
+        </div>
+        <div>
+            <label for="gender">Пол:</label>
+            <select id="gender" name="gender" required>
+                <option value="male">Мужской</option>
+                <option value="female">Женский</option>
+            </select>
+        </div>
+        <div>
+            <label for="sexual_orientation">Сексуальная ориентация:</label>
+            <select id="sexual_orientation" name="sexual_orientation">
+                <option value="straight">Гетеросексуальный</option>
+                <option value="gay">Гомосексуальный</option>
+                <option value="bisexual">Бисексуальный</option>
+            </select>
+        </div>
+        <div>
+            <label for="birth_date">Дата рождения:</label>
+            <input type="date" id="birth_date" name="birth_date" value="1995-06-15" required>
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" value="password123" required>
+        </div>
+        <div>
+            <label for="password_confirmation">Подтверждение пароля:</label>
+            <input type="password" id="password_confirmation" name="password_confirmation" value="password123" required>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            try {
+                const response = await fetch('http://localhost:8000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(formObject)
+                });
+
+                const data = await response.json();
+                document.getElementById('response').innerHTML = 
+                    `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('response').innerHTML = 
+                    `<div style="color: red;">Ошибка: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html> 
