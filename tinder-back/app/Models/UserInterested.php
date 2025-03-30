@@ -1,10 +1,22 @@
-<?php 
+<?php
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UserInterested extends Model{
+/**
+ * @OA\Schema(
+ *     schema="UserInterested",
+ *     title="UserInterested",
+ *     description="Связь пользователя с интересами",
+ *     @OA\Property(property="user_id", type="integer", example=1),
+ *     @OA\Property(property="interest_id", type="integer", example=2)
+ * )
+ */
+class UserInterested extends Model
+{
     use HasFactory;
     
     protected $fillable = [
@@ -21,5 +33,4 @@ class UserInterested extends Model{
     {
         return $this->belongsTo(Interest::class);
     }
-
 }
