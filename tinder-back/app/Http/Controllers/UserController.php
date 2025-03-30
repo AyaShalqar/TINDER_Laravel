@@ -12,8 +12,34 @@ use App\Models\UserBio;
 use App\Models\UserImages;
 use App\Models\Interest;
 
+
+/**
+ * @OA\Tag(name="Users")
+ */
 class UserController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/register",
+     *     summary="Register a new user",
+     *     tags={"Users"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password", "phone_number", "gender", "birth_date"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
+     *             @OA\Property(property="phone_number", type="string", example="+1234567890"),
+     *             @OA\Property(property="gender", type="string", example="male"),
+     *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="password", type="string", format="password", example="securepassword"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="securepassword")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="User registered successfully"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function register(Request $request ){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -48,6 +74,23 @@ class UserController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/login",
+     *     summary="User login",
+     *     tags={"Users"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="securepassword")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="User logged in successfully"),
+     *     @OA\Response(response=401, description="Invalid credentials")
+     * )
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -75,8 +118,29 @@ class UserController extends Controller
         
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
-    
-    // Обновление основной информации профиля
+
+    /**
+    * @OA\Put(
+        *     path="/profile",
+        *     summary="Update user profile",
+        *     tags={"Users"},
+        *     security={{"bearerAuth":{}}},
+        *     @OA\RequestBody(
+        *         required=true,
+        *         @OA\JsonContent(
+        *             @OA\Property(property="name", type="string", example="John Doe"),
+        *             @OA\Property(property="phone_number", type="string", example="+1234567890"),
+        *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
+        *             @OA\Property(property="gender", type="string", example="male"),
+        *             @OA\Property(property="sexual_orientation", type="string", example="heterosexual"),
+        *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01")
+        *         )
+        *     ),
+        *     @OA\Response(response=200, description="Profile updated successfully"),
+        *     @OA\Response(response=401, description="Unauthorized"),
+        *     @OA\Response(response=422, description="Validation errors")
+        * )
+        */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -108,7 +172,32 @@ class UserController extends Controller
         ]);
     }
     
-    // Обновление/создание био
+    /**
+     * @OA\Post(
+     *     path="/profile/bio",
+     *     summary="Update or create user bio",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="bio", type="string", example="I love coding!"),
+     *             @OA\Property(property="height", type="integer", example=180),
+     *             @OA\Property(property="goals_relation", type="string", example="Serious relationship"),
+     *             @OA\Property(property="languages", type="array", @OA\Items(type="string"), example={"English", "French"}),
+     *             @OA\Property(property="zodiac_sign", type="string", example="Leo"),
+     *             @OA\Property(property="education", type="string", example="Master's Degree"),
+     *             @OA\Property(property="children_preference", type="string", example="No preference"),
+     *             @OA\Property(property="latitude", type="number", format="float", example=48.8566),
+     *             @OA\Property(property="longitude", type="number", format="float", example=2.3522),
+     *             @OA\Property(property="location_name", type="string", example="Paris, France")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Bio updated successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function updateBio(Request $request)
     {
         $user = Auth::user();
@@ -149,7 +238,25 @@ class UserController extends Controller
         ]);
     }
     
-
+    /**
+     * @OA\Post(
+     *     path="/profile/location",
+     *     summary="Update user location",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="latitude", type="number", format="float", example=37.7749),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-122.4194),
+     *             @OA\Property(property="location_name", type="string", example="San Francisco, USA")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Location updated successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function updateLocation(Request $request)
     {
         $user = Auth::user();
@@ -183,7 +290,26 @@ class UserController extends Controller
         ]);
     }
     
-
+    /**
+     * @OA\Post(
+     *     path="/profile/images",
+     *     summary="Upload user image",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="image", type="file", format="binary")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Image uploaded successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function uploadImage(Request $request)
     {
         $user = Auth::user();
@@ -221,7 +347,23 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     
-
+    /**
+     * @OA\Delete(
+     *     path="/profile/image/{id}",
+     *     summary="Delete user image",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Image deleted successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Image not found")
+     * )
+     */
     public function deleteImage($id)
     {
         $user = Auth::user();
@@ -241,7 +383,23 @@ class UserController extends Controller
         return response()->json(['message' => 'Image deleted successfully']);
     }
     
-
+    /**
+     * @OA\Post(
+     *     path="/profile/interests",
+     *     summary="Add user interests",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="interests", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Interests added successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function addInterests(Request $request)
     {
         $user = Auth::user();
@@ -267,6 +425,23 @@ class UserController extends Controller
         ]);
     }
     
+    /**
+     * @OA\Delete(
+     *     path="/profile/interests",
+     *     summary="Remove user interests",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="interests", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Interests removed successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function removeInterests(Request $request)
     {
         $user = Auth::user();
@@ -292,6 +467,16 @@ class UserController extends Controller
         ]);
     }
     
+    /**
+     * @OA\Get(
+     *     path="/profile",
+     *     summary="Get user profile",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="User profile retrieved successfully"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function getProfile()
     {
         $user = Auth::user();
@@ -308,6 +493,14 @@ class UserController extends Controller
     }
 
 
+    /**
+     * @OA\Get(
+     *     path="/users",
+     *     summary="Get all users",
+     *     tags={"Users"},
+     *     @OA\Response(response=200, description="Users retrieved successfully")
+     * )
+ */
     public function getAllUsers()
     {
         $users = User::getAllUsersWithData();
