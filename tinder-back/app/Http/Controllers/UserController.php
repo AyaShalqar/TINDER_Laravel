@@ -125,6 +125,9 @@ class UserController extends Controller
             'zodiac_sign' => 'nullable|string',
             'education' => 'nullable|string',
             'children_preference' => 'nullable|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'location_name' => 'nullable|string',
         ]);
         
         if ($validator->fails()) {
@@ -135,7 +138,8 @@ class UserController extends Controller
             ['user_id' => $user->id],
             $request->only([
                 'bio', 'height', 'goals_relation', 'languages', 
-                'zodiac_sign', 'education', 'children_preference'
+                'zodiac_sign', 'education', 'children_preference',
+                'latitude', 'longitude', 'location_name'
             ])
         );
         
@@ -145,7 +149,41 @@ class UserController extends Controller
         ]);
     }
     
-    // Загрузка фото
+
+    public function updateLocation(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'location_name' => 'nullable|string',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        
+        $bio = $user->userBio()->updateOrCreate(
+            ['user_id' => $user->id],
+            $request->only(['latitude', 'longitude', 'location_name'])
+        );
+        
+        return response()->json([
+            'message' => 'Location updated successfully',
+            'location' => [
+                'latitude' => $bio->latitude,
+                'longitude' => $bio->longitude,
+                'location_name' => $bio->location_name
+            ]
+        ]);
+    }
+    
+
     public function uploadImage(Request $request)
     {
         $user = Auth::user();
@@ -183,7 +221,7 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     
-    // Удаление фото
+
     public function deleteImage($id)
     {
         $user = Auth::user();
@@ -194,7 +232,7 @@ class UserController extends Controller
         
         $image = $user->images()->findOrFail($id);
         
-        // Удаление файла из хранилища
+
         $filePath = str_replace('storage/', 'public/', $image->image_path);
         Storage::delete($filePath);
         
@@ -203,7 +241,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Image deleted successfully']);
     }
     
-    // Добавление интересов
+
     public function addInterests(Request $request)
     {
         $user = Auth::user();
@@ -229,7 +267,6 @@ class UserController extends Controller
         ]);
     }
     
-    // Удаление интересов
     public function removeInterests(Request $request)
     {
         $user = Auth::user();
@@ -255,7 +292,6 @@ class UserController extends Controller
         ]);
     }
     
-    // Получение профиля пользователя со всеми данными
     public function getProfile()
     {
         $user = Auth::user();
@@ -268,6 +304,16 @@ class UserController extends Controller
         
         return response()->json([
             'user' => $user
+        ]);
+    }
+
+
+    public function getAllUsers()
+    {
+        $users = User::getAllUsersWithData();
+        
+        return response()->json([
+            'users' => $users
         ]);
     }
 }

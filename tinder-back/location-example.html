@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Геолокация пользователя</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Геолокация пользователя</h1>
+    
+    <p>Нажмите на кнопку ниже, чтобы получить ваше текущее местоположение и отправить его на сервер:</p>
+    
+    <button id="getLocationBtn">Получить и отправить местоположение</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            
+            // Проверяем поддержку геолокации в браузере
+            if (!navigator.geolocation) {
+                resultDiv.innerHTML = 'Ваш браузер не поддерживает геолокацию';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Получение местоположения...';
+            
+            // Получаем текущее местоположение
+            navigator.geolocation.getCurrentPosition(async function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                
+                resultDiv.innerHTML = `
+                    <p>Широта: ${latitude}</p>
+                    <p>Долгота: ${longitude}</p>
+                    <p>Отправка данных на сервер...</p>
+                `;
+                
+                try {
+                    // Здесь можно добавить получение названия места по координатам
+                    // через Google Geocoding API или другой сервис
+                    
+                    // Отправляем координаты на сервер
+                    const token = localStorage.getItem('access_token'); // Здесь должен быть токен
+                    
+                    if (!token) {
+                        resultDiv.innerHTML += '<p style="color: red">Ошибка: Вы не авторизованы</p>';
+                        return;
+                    }
+                    
+                    const response = await fetch('http://localhost:8000/api/profile/location', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            latitude: latitude,
+                            longitude: longitude,
+                            location_name: 'Определено автоматически' // Можно заменить на результат геокодирования
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        resultDiv.innerHTML += `
+                            <p style="color: green">${data.message}</p>
+                            <pre>${JSON.stringify(data.location, null, 2)}</pre>
+                        `;
+                    } else {
+                        resultDiv.innerHTML += `
+                            <p style="color: red">Ошибка: ${data.message || 'Не удалось отправить координаты'}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        `;
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML += `<p style="color: red">Ошибка: ${error.message}</p>`;
+                }
+                
+            }, function(error) {
+                // Обработка ошибок геолокации
+                let errorMessage = 'Неизвестная ошибка';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Пользователь отклонил запрос на геолокацию.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Информация о местоположении недоступна.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Истекло время ожидания запроса на получение местоположения.';
+                        break;
+                }
+                
+                resultDiv.innerHTML = `<p style="color: red">Ошибка: ${errorMessage}</p>`;
+            });
+        });
+        
+        // Функция для сохранения токена при входе
+        function saveToken(token) {
+            localStorage.setItem('access_token', token);
+        }
+    </script>
+</body>
+</html> 

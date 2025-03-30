@@ -9,6 +9,9 @@ use App\Http\Controllers\InterestController;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
+// Получение всех пользователей
+Route::get('/users', [UserController::class, 'getAllUsers']);
+
 // Интересы (публичные для чтения)
 Route::get('/interests', [InterestController::class, 'index']);
 Route::get('/interests/{id}', [InterestController::class, 'show']);
@@ -21,6 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Био пользователя
     Route::post('/profile/bio', [UserController::class, 'updateBio']);
+    
+    // Геолокация пользователя
+    Route::post('/profile/location', [UserController::class, 'updateLocation']);
     
     // Фотографии пользователя
     Route::post('/profile/images', [UserController::class, 'uploadImage']);

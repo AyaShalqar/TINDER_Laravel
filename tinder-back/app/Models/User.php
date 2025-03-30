@@ -38,6 +38,16 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * Получить всех пользователей с их полными данными
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllUsersWithData()
+    {
+        return self::with(['userBio', 'images', 'interests'])->get();
+    }
+
     public function userBio():HasOne
     {
         return $this->hasOne(UserBio::class);

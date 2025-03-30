@@ -18,11 +18,16 @@ class UserBio extends Model
         'zodiac_sign',
         'education',
         'children_preference',
+        'latitude',
+        'longitude',
+        'location_name',
         'user_id',
     ];
 
     protected $casts = [
         'languages' => 'array', // или 'json'
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
     public function user(): BelongsTo{
         return $this->belongsTo(User::class);

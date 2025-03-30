@@ -8,14 +8,14 @@ use App\Models\Interest;
 
 class InterestController extends Controller
 {
-    // Получить все интересы
+    
     public function index()
     {
         $interests = Interest::all();
         return response()->json(['interests' => $interests]);
     }
     
-    // Создать новый интерес
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -36,14 +36,14 @@ class InterestController extends Controller
         ], 201);
     }
     
-    // Получить конкретный интерес
+
     public function show($id)
     {
         $interest = Interest::findOrFail($id);
         return response()->json(['interest' => $interest]);
     }
     
-    // Обновить интерес
+
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -65,7 +65,7 @@ class InterestController extends Controller
         ]);
     }
     
-    // Удалить интерес
+
     public function destroy($id)
     {
         $interest = Interest::findOrFail($id);

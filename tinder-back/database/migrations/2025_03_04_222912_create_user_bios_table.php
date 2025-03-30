@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('zodiac_sign')->nullable();
             $table->string('education')->nullable();
             $table->string('children_preference')->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('location_name')->nullable();
             
             $table->foreignId('user_id')
                   ->unique()
