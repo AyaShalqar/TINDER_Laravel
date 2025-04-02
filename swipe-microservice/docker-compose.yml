@@ -1,0 +1,30 @@
+version : '3.8'
+
+services:
+  app:
+    build: .
+    container_name: swipe_service
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+
+  db:
+    image: postgres:latest
+    container_name : swipe_db
+    env_file: .env
+    restart: always
+    ports : 
+      - "5400:5432"
+    volumes : 
+     - postgres_data:/var/lib/postgresql/data
+    
+volumes : 
+  postgres_data:  
