@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\UserBio;
 use App\Models\UserImages;
@@ -18,28 +19,30 @@ use App\Models\Interest;
  */
 class UserController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/register",
-     *     summary="Register a new user",
-     *     tags={"Users"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "email", "password", "phone_number", "gender", "birth_date"},
-     *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
-     *             @OA\Property(property="phone_number", type="string", example="+1234567890"),
-     *             @OA\Property(property="gender", type="string", example="male"),
-     *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
-     *             @OA\Property(property="password", type="string", format="password", example="securepassword"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password", example="securepassword")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="User registered successfully"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
+/**
+ * @OA\Post(
+ *     path="/register",
+ *     summary="Register a new user",
+ *     tags={"Users"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name", "email", "password", "phone_number", "gender", "birth_date", "sexual_orientation"},
+ *             @OA\Property(property="name", type="string", example="Иван Петров"),
+ *             @OA\Property(property="email", type="string", format="email", example="iva2n@example.com"),
+ *             @OA\Property(property="phone_number", type="string", example="+7 (989) 123-45-67"),
+ *             @OA\Property(property="gender", type="string", example="male"),
+ *             @OA\Property(property="sexual_orientation", type="string", example="straight"),
+ *             @OA\Property(property="birth_date", type="string", format="date", example="1995-06-15"),
+ *             @OA\Property(property="password", type="string", format="password", example="password123"),
+ *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
+ *         )
+ *     ),
+ *     @OA\Response(response=201, description="User registered successfully"),
+ *     @OA\Response(response=422, description="Validation errors")
+ * )
+ */
+
     public function register(Request $request ){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -121,26 +124,23 @@ class UserController extends Controller
 
     /**
     * @OA\Put(
-        *     path="/profile",
-        *     summary="Update user profile",
-        *     tags={"Users"},
-        *     security={{"bearerAuth":{}}},
-        *     @OA\RequestBody(
-        *         required=true,
-        *         @OA\JsonContent(
-        *             @OA\Property(property="name", type="string", example="John Doe"),
-        *             @OA\Property(property="phone_number", type="string", example="+1234567890"),
-        *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
-        *             @OA\Property(property="gender", type="string", example="male"),
-        *             @OA\Property(property="sexual_orientation", type="string", example="heterosexual"),
-        *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01")
-        *         )
-        *     ),
-        *     @OA\Response(response=200, description="Profile updated successfully"),
-        *     @OA\Response(response=401, description="Unauthorized"),
-        *     @OA\Response(response=422, description="Validation errors")
-        * )
-        */
+    *     path="/profile",
+    *     summary="Update user profile",
+    *     tags={"Users"},
+    *     security={{"bearerAuth":{}}},
+    *     @OA\RequestBody(
+    *         required=true,
+    *         @OA\JsonContent(
+    *             @OA\Property(property="name", type="string", example="Нk"),
+    *             @OA\Property(property="gender", type="string", example="female"),
+    *             @OA\Property(property="sexual_orientation", type="string", example="straight")
+    *         )
+    *     ),
+    *     @OA\Response(response=200, description="Profile updated successfully"),
+    *     @OA\Response(response=401, description="Unauthorized"),
+    *     @OA\Response(response=422, description="Validation errors")
+    * )
+    */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -293,7 +293,7 @@ class UserController extends Controller
     /**
      * @OA\Post(
      *     path="/profile/images",
-     *     summary="Upload user image",
+     *     summary="Upload user image to S3",
      *     tags={"Users"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -301,7 +301,7 @@ class UserController extends Controller
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(property="image", type="file", format="binary")
+     *                 @OA\Property(property="image", type="string", format="binary")
      *             )
      *         )
      *     ),
@@ -328,16 +328,25 @@ class UserController extends Controller
         }
         
         $imageFile = $request->file('image') ?: $request->file('images');
-        
+        Log::info("loh");
         if ($imageFile) {
             $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
-            $imageFile->storeAs('public/user_images', $imageName);
-            
+            $filePath = "user_photos/{$imageName}";
+            Log::info("first");
+            Storage::disk('s3')->put($filePath, file_get_contents($imageFile), 'public');
+            Storage::disk('s3')->setVisibility($filePath, 'public');
+            $imageUrl = Storage::disk('s3')->url($filePath);
+
+            // $localFilePath = '/home/legioner/Pictures/Screenshots/Screenshot from 2025-03-05 03-39-03.png';
+
+            // Storage::disk('s3')->put('user_photos/secondtry.png', file_get_contents($localFilePath));
+
+            Log::info('second');
             $userImage = $user->images()->create([
-                'image_path' => 'storage/user_images/' . $imageName,
+                'image_path' => $imageUrl,
                 'user_id' => $user->id
             ]);
-            
+            Log::info('third');
             return response()->json([
                 'message' => 'Image uploaded successfully',
                 'image' => $userImage
@@ -350,7 +359,7 @@ class UserController extends Controller
     /**
      * @OA\Delete(
      *     path="/profile/image/{id}",
-     *     summary="Delete user image",
+     *     summary="Delete user image from S3",
      *     tags={"Users"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -375,8 +384,10 @@ class UserController extends Controller
         $image = $user->images()->findOrFail($id);
         
 
-        $filePath = str_replace('storage/', 'public/', $image->image_path);
-        Storage::delete($filePath);
+        $filePath = parse_url($image->image_path, PHP_URL_PATH);
+        $filePath = ltrim($filePath, '/');
+
+        Storage::disk('s3')->delete($filePath);
         
         $image->delete();
         

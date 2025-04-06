@@ -180,40 +180,45 @@
                                     "password",
                                     "phone_number",
                                     "gender",
-                                    "birth_date"
+                                    "birth_date",
+                                    "sexual_orientation"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "Иван Петров"
                                     },
                                     "email": {
                                         "type": "string",
                                         "format": "email",
-                                        "example": "johndoe@example.com"
+                                        "example": "iva2n@example.com"
                                     },
                                     "phone_number": {
                                         "type": "string",
-                                        "example": "+1234567890"
+                                        "example": "+7 (989) 123-45-67"
                                     },
                                     "gender": {
                                         "type": "string",
                                         "example": "male"
                                     },
+                                    "sexual_orientation": {
+                                        "type": "string",
+                                        "example": "straight"
+                                    },
                                     "birth_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "1990-01-01"
+                                        "example": "1995-06-15"
                                     },
                                     "password": {
                                         "type": "string",
                                         "format": "password",
-                                        "example": "securepassword"
+                                        "example": "password123"
                                     },
                                     "password_confirmation": {
                                         "type": "string",
                                         "format": "password",
-                                        "example": "securepassword"
+                                        "example": "password123"
                                     }
                                 },
                                 "type": "object"
@@ -309,29 +314,15 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "John Doe"
-                                    },
-                                    "phone_number": {
-                                        "type": "string",
-                                        "example": "+1234567890"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "johndoe@example.com"
+                                        "example": "Нk"
                                     },
                                     "gender": {
                                         "type": "string",
-                                        "example": "male"
+                                        "example": "female"
                                     },
                                     "sexual_orientation": {
                                         "type": "string",
-                                        "example": "heterosexual"
-                                    },
-                                    "birth_date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "1990-01-01"
+                                        "example": "straight"
                                     }
                                 },
                                 "type": "object"
@@ -498,7 +489,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Upload user image",
+                "summary": "Upload user image to S3",
                 "operationId": "b31879062814efb8f0193156fb3c366e",
                 "requestBody": {
                     "required": true,
@@ -507,7 +498,7 @@
                             "schema": {
                                 "properties": {
                                     "image": {
-                                        "type": "file",
+                                        "type": "string",
                                         "format": "binary"
                                     }
                                 },
@@ -539,7 +530,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Delete user image",
+                "summary": "Delete user image from S3",
                 "operationId": "98a2a39e23e3b706b86923cd2a453355",
                 "parameters": [
                     {
