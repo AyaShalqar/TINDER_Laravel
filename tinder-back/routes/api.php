@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InterestController;
+use App\Http\Controllers\SwipeController;
 
 // Публичные маршруты
 Route::post('/register', [UserController::class, 'register']);
@@ -40,4 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/interests', [InterestController::class, 'store']);
     Route::put('/interests/{id}', [InterestController::class, 'update']);
     Route::delete('/interests/{id}', [InterestController::class, 'destroy']);
+
+
 });
