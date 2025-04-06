@@ -30,6 +30,7 @@ class InterestController extends Controller
      *     path="/interests",
      *     summary="Create a new interest",
      *     tags={"Interests"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -87,6 +88,7 @@ class InterestController extends Controller
      *     path="/interests/{id}",
      *     summary="Update an interest",
      *     tags={"Interests"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -131,6 +133,7 @@ class InterestController extends Controller
      *     path="/interests/{id}",
      *     summary="Delete an interest",
      *     tags={"Interests"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

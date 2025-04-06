@@ -60,7 +60,12 @@
                     "422": {
                         "description": "Validation errors"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/interests/{id}": {
@@ -134,7 +139,12 @@
                     "404": {
                         "description": "Interest not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -159,7 +169,12 @@
                     "404": {
                         "description": "Interest not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/register": {
