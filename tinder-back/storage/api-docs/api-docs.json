@@ -682,6 +682,25 @@
                     }
                 }
             }
+        },
+        "/recommendations": {
+            "get": {
+                "tags": [
+                    "Recomendations"
+                ],
+                "summary": "Get recomendations",
+                "operationId": "71cc69d9a2e4f6e9a317f3b34a318432",
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -716,6 +735,10 @@
         },
         {
             "name": "Users"
+        },
+        {
+            "name": "Recomendations",
+            "description": "Recomendations"
         }
     ]
 }

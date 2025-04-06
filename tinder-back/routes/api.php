@@ -44,5 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::post('/swipes', [SwipeController::class, 'store']);
+    Route::get('/recommendations', [UserController::class,'getRecommendations']);
 
 });

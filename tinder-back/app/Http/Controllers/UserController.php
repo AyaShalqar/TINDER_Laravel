@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Services\RecommendationService;
 use App\Models\User;
 use App\Models\UserBio;
 use App\Models\UserImages;
@@ -520,4 +521,23 @@ class UserController extends Controller
             'users' => $users
         ]);
     }
+
+
+        /**
+     * @OA\Get(
+     *     path="/recommendations",
+     *     summary="Get recomendations",
+     *     tags={"Recomendations"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Users retrieved successfully")
+     * )
+ */
+public function getRecommendations(RecommendationService $service)
+{
+    $user = auth()->user(); // или другой способ
+    $recommendations = $service->recommendForUser($user);
+
+    return response()->json($recommendations);
+}
+
 }
