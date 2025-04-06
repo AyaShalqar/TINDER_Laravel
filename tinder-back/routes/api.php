@@ -43,4 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/interests/{id}', [InterestController::class, 'destroy']);
 
 
+    Route::post('/swipes', [SwipeController::class, 'store']);
+
 });
