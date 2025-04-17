@@ -12,7 +12,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "^3.29",
-        "mateusjunges/laravel-kafka": "^2.5",
+        "mateusjunges/laravel-kafka": "^2.5", 
         "nextapps/laravel-swagger-ui": "^1.2"
     },
     "require-dev": {

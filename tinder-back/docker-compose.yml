@@ -1,7 +1,18 @@
 version: '3.8'
 
 services:
-  # Ваш сервис PostgreSQL
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:15
     container_name: tinder_postgres
@@ -13,59 +24,47 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Хранилище для БД
+      - postgres_data:/var/lib/postgresql/data
 
-  # Сервис Kafka (режим KRaft, без Zookeeper)
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
-    # depends_on: # Зависимость от Zookeeper больше не нужна
-    #   - zookeeper
     ports:
-      # Порт для доступа снаружи Docker (из вашего Laravel/Go приложения)
       - "9092:9092"
-    # Внутри services: -> kafka:
     environment:
-        KAFKA_NODE_ID: 1
-        KAFKA_PROCESS_ROLES: 'broker,controller'
-        KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
-        KAFKA_LISTENERS: 'PLAINTEXT_HOST://:9092,CONTROLLER://:9093'
-        KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://localhost:9092'
-        KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-        # Явно указываем директорию для логов (данных), которая связана с volume
-        KAFKA_LOG_DIRS: '/var/lib/kafka/data'
-        KAFKA_BROKERCONNECT: "host.docker.internal:9092"
-        # Остальные настройки оставляем
-        KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-        CLUSTER_ID: "ZbQBPvZ4TU-njdoMQFvguA"
-        KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_HOST'
-        JVM_OPTS: "-Xms32m -Xmx64m"
-        SERVER_SERVLET_CONTEXTPATH: "/"
-        # CLUSTER_ID пока не добавляем, надеемся на автогенерацию при пустой папке
-    volumes: # Добавляем volume для Kafka, чтобы данные не терялись
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT_HOST://:9092,CONTROLLER://:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://localhost:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      CLUSTER_ID: "ZbQBPvZ4TU-njdoMQFvguA"
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_HOST'
+      JVM_OPTS: "-Xms32m -Xmx64m"
+    volumes:
       - kafka_data:/var/lib/kafka/data
 
-  # Сервис Kafdrop (Веб-интерфейс для Kafka)
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
     container_name: kafdrop
     depends_on:
-      - kafka # Зависит от Kafka
+      - kafka
     ports:
-      - "19000:9000" # Доступ к Kafdrop через http://localhost:19000
+      - "19000:9000"
     environment:
-      KAFKA_BROKERCONNECT: "kafka:9092" # Подключается к брокеру Kafka
+      KAFKA_BROKERCONNECT: "kafka:9092"
       JVM_OPTS: "-Xms32m -Xmx64m"
       SERVER_SERVLET_CONTEXTPATH: "/"
 
-# Определяем именованные volumes для хранения данных
 volumes:
   postgres_data:
     driver: local
-  kafka_data: # Добавляем определение volume для Kafka
+  kafka_data:
     driver: local
