@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Matches;
+use App\Models\Swipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -70,6 +72,9 @@ class UserController extends Controller
         
         $token = $user->createToken('auth_token')->plainTextToken;
         
+        // Auth::login($user);
+        // return redirect('/login');
+
         return response()->json([
             'message' => 'User registered successfully!', 
             'access_token' => $token,
@@ -320,34 +325,35 @@ class UserController extends Controller
         }
         
         $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'images' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+        
         
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
         
-        $imageFile = $request->file('image') ?: $request->file('images');
+        $imageFile = $request->file('image');
         Log::info("loh");
         if ($imageFile) {
             $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
             $filePath = "user_photos/{$imageName}";
-            Log::info("first");
-            Storage::disk('s3')->put($filePath, file_get_contents($imageFile), 'public');
-            Storage::disk('s3')->setVisibility($filePath, 'public');
+            try {
+                Storage::disk('s3')->put($filePath, file_get_contents($imageFile), 'public');
+                Storage::disk('s3')->setVisibility($filePath, 'public');
+            } catch (\Exception $e) {
+                Log::error("S3 upload error: " . $e->getMessage());
+                return response()->json(['message' => 'Failed to upload image'], 500);
+            }
+            
             $imageUrl = Storage::disk('s3')->url($filePath);
 
-            // $localFilePath = '/home/legioner/Pictures/Screenshots/Screenshot from 2025-03-05 03-39-03.png';
 
-            // Storage::disk('s3')->put('user_photos/secondtry.png', file_get_contents($localFilePath));
-
-            Log::info('second');
             $userImage = $user->images()->create([
                 'image_path' => $imageUrl,
                 'user_id' => $user->id
             ]);
-            Log::info('third');
+
             return response()->json([
                 'message' => 'Image uploaded successfully',
                 'image' => $userImage
@@ -532,12 +538,164 @@ class UserController extends Controller
      *     @OA\Response(response=200, description="Users retrieved successfully")
      * )
  */
-public function getRecommendations(RecommendationService $service)
-{
-    $user = auth()->user(); // или другой способ
-    $recommendations = $service->recommendForUser($user);
+    public function getRecommendations(RecommendationService $service)
+    {
+        $user = auth()->user(); // или другой способ
+        $recommendations = $service->recommendForUser($user);
 
-    return response()->json($recommendations);
-}
+        return response()->json($recommendations);
+    }
 
+
+        /**
+     * @OA\Post(
+     *     path="/swipe",
+     *     summary="Register a swipe action",
+     *     tags={"Matching"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"target_user_id", "action"},
+     *             @OA\Property(property="target_user_id", type="integer", example=123),
+     *             @OA\Property(property="action", type="string", enum={"like", "dislike"}, example="like")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Swipe recorded successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
+    public function swipe(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'target_user_id' => 'required|integer|exists:users,id',
+            'action' => 'required|string|in:like,dislike'
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        
+        // Check if swipe already exists
+        $existingSwipe = $user->swipes()
+            ->where('target_user_id', $request->target_user_id)
+            ->first();
+        
+        if ($existingSwipe) {
+            return response()->json(['message' => 'You have already swiped on this user'], 409);
+        }
+        
+        // Record the swipe
+        $swipe = $user->swipes()->create([
+            'target_user_id' => $request->target_user_id,
+            'action' => $request->action
+        ]);
+        
+        // Check for a match
+        if ($request->action === 'like') {
+            $mutualLike = Swipe::where('user_id', $request->target_user_id)
+                ->where('target_user_id', $user->id)
+                ->where('action', 'like')
+                ->first();
+            
+            if ($mutualLike) {
+                // Create a match
+                Matches::create([
+                    'user1_id' => $user->id,
+                    'user2_id' => $request->target_user_id
+                ]);
+                
+                return response()->json([
+                    'message' => 'It\'s a match!',
+                    'match' => true,
+                    'matched_user_id' => $request->target_user_id
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'message' => 'Swipe recorded successfully',
+            'match' => false
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/matches",
+     *     summary="Get user's matches",
+     *     tags={"Matching"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Matches retrieved successfully"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function getMatches()
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $matches = $user->matches()->with(['user1', 'user2'])->get();
+        
+        // Format the matches to always show the other user
+        $formattedMatches = $matches->map(function($match) use ($user) {
+            $otherUser = $match->user1_id === $user->id ? $match->user2 : $match->user1;
+            return [
+                'match_id' => $match->id,
+                'user' => $otherUser,
+                'created_at' => $match->created_at
+            ];
+        });
+        
+        return response()->json([
+            'matches' => $formattedMatches
+        ]);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/matches/{match_id}",
+     *     summary="Unmatch with a user",
+     *     tags={"Matching"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="match_id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Unmatched successfully"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Match not found")
+     * )
+     */
+    public function unmatch($matchId)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $match = $user->matches()
+            ->where('id', $matchId)
+            ->first();
+        
+        if (!$match) {
+            return response()->json(['message' => 'Match not found'], 404);
+        }
+        
+        $match->delete();
+        
+        return response()->json(['message' => 'Unmatched successfully']);
+    }
 }

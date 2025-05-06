@@ -43,7 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/interests/{id}', [InterestController::class, 'destroy']);
 
 
-    Route::post('/swipes', [SwipeController::class, 'store']);
+    // Route::post('/swipes', [SwipeController::class, 'store']);
     Route::get('/recommendations', [UserController::class,'getRecommendations']);
 
+
+    Route::post('/swipe', [UserController::class, 'swipe'])->middleware('auth:sanctum');
+    Route::get('/matches', [UserController::class, 'getMatches'])->middleware('auth:sanctum');
+    Route::delete('/matches/{match_id}', [UserController::class, 'unmatch'])->middleware('auth:sanctum');
 });

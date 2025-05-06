@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-RUN pecl install rdkafka && docker-php-ext-enable rdkafka
+# RUN pecl install rdkafka && docker-php-ext-enable rdkafka
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

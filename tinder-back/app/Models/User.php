@@ -70,4 +70,12 @@ class User extends Authenticatable
         );
     }
     
+    public function swipes() {
+        return $this->hasMany(Swipe::class);
+    }
+
+    public function matches() {
+        return $this->hasMany(Matches::class, 'user1_id')->orWhere('user2_id', $this->id);
+    }
+
 }

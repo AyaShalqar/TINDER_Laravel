@@ -701,6 +701,116 @@
                     }
                 ]
             }
+        },
+        "/swipe": {
+            "post": {
+                "tags": [
+                    "Matching"
+                ],
+                "summary": "Register a swipe action",
+                "operationId": "03d2f099169b587b47cb696dec6275ab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "target_user_id",
+                                    "action"
+                                ],
+                                "properties": {
+                                    "target_user_id": {
+                                        "type": "integer",
+                                        "example": 123
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "enum": [
+                                            "like",
+                                            "dislike"
+                                        ],
+                                        "example": "like"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Swipe recorded successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/matches": {
+            "get": {
+                "tags": [
+                    "Matching"
+                ],
+                "summary": "Get user's matches",
+                "operationId": "10115bf89e79ef4d2858cc781424f193",
+                "responses": {
+                    "200": {
+                        "description": "Matches retrieved successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/matches/{match_id}": {
+            "delete": {
+                "tags": [
+                    "Matching"
+                ],
+                "summary": "Unmatch with a user",
+                "operationId": "b0232f71951f2782809ed32457069d55",
+                "parameters": [
+                    {
+                        "name": "match_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unmatched successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Match not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -739,6 +849,10 @@
         {
             "name": "Recomendations",
             "description": "Recomendations"
+        },
+        {
+            "name": "Matching",
+            "description": "Matching"
         }
     ]
 }
