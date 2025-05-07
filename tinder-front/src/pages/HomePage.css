@@ -1,0 +1,125 @@
+/* Основной контейнер в стиле Tinder */
+.home-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.home-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Контейнер для карточек */
+.card-container {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 300px;
+    width: 100%;
+}
+
+/* Сообщения */
+.match-message {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #e0ffe0;
+    border: 1px solid #33cc33;
+    color: #33cc33;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.error-message {
+    background: rgba(255, 228, 228, 0.8);
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 500px;
+    width: 100%;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto;
+}
+
+/* Загрузка */
+.loading-message {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.3rem;
+    margin: 2rem 0;
+    animation: fadeIn 0.5s ease-out infinite alternate;
+}
+
+/* Кнопки */
+.action-button {
+    background: white;
+    color: #FD297B;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    background: #FD297B;
+    color: white;
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+/* Сообщение "нет пользователей" */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1rem;
+    color: #777;    
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Нижняя панель */
+.bottom-nav {
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Опционально: адаптация для маленьких экранов */
+@media (max-width: 480px) {
+    .home-title {
+        font-size: 1.8rem;
+    }
+
+    .action-button {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+}

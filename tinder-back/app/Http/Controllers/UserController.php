@@ -24,30 +24,6 @@ use App\Models\Interest;
  */
 class UserController extends Controller
 {
-/**
- * @OA\Post(
- *     path="/register",
- *     summary="Register a new user",
- *     tags={"Users"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"name", "email", "password", "phone_number", "gender", "birth_date", "sexual_orientation"},
- *             @OA\Property(property="name", type="string", example="Иван Петров"),
- *             @OA\Property(property="email", type="string", format="email", example="iva2n@example.com"),
- *             @OA\Property(property="phone_number", type="string", example="+7 (989) 123-45-67"),
- *             @OA\Property(property="gender", type="string", example="male"),
- *             @OA\Property(property="sexual_orientation", type="string", example="straight"),
- *             @OA\Property(property="birth_date", type="string", format="date", example="1995-06-15"),
- *             @OA\Property(property="password", type="string", format="password", example="password123"),
- *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
- *         )
- *     ),
- *     @OA\Response(response=201, description="User registered successfully"),
- *     @OA\Response(response=422, description="Validation errors")
- * )
- */
-
     public function register(Request $request ){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -85,23 +61,6 @@ class UserController extends Controller
         ], 201);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/login",
-     *     summary="User login",
-     *     tags={"Users"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"email", "password"},
-     *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="securepassword")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="User logged in successfully"),
-     *     @OA\Response(response=401, description="Invalid credentials")
-     * )
-     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -130,25 +89,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    /**
-    * @OA\Put(
-    *     path="/profile",
-    *     summary="Update user profile",
-    *     tags={"Users"},
-    *     security={{"bearerAuth":{}}},
-    *     @OA\RequestBody(
-    *         required=true,
-    *         @OA\JsonContent(
-    *             @OA\Property(property="name", type="string", example="Нk"),
-    *             @OA\Property(property="gender", type="string", example="female"),
-    *             @OA\Property(property="sexual_orientation", type="string", example="straight")
-    *         )
-    *     ),
-    *     @OA\Response(response=200, description="Profile updated successfully"),
-    *     @OA\Response(response=401, description="Unauthorized"),
-    *     @OA\Response(response=422, description="Validation errors")
-    * )
-    */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -180,32 +120,6 @@ class UserController extends Controller
         ]);
     }
     
-    /**
-     * @OA\Post(
-     *     path="/profile/bio",
-     *     summary="Update or create user bio",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="bio", type="string", example="I love coding!"),
-     *             @OA\Property(property="height", type="integer", example=180),
-     *             @OA\Property(property="goals_relation", type="string", example="Serious relationship"),
-     *             @OA\Property(property="languages", type="array", @OA\Items(type="string"), example={"English", "French"}),
-     *             @OA\Property(property="zodiac_sign", type="string", example="Leo"),
-     *             @OA\Property(property="education", type="string", example="Master's Degree"),
-     *             @OA\Property(property="children_preference", type="string", example="No preference"),
-     *             @OA\Property(property="latitude", type="number", format="float", example=48.8566),
-     *             @OA\Property(property="longitude", type="number", format="float", example=2.3522),
-     *             @OA\Property(property="location_name", type="string", example="Paris, France")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Bio updated successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function updateBio(Request $request)
     {
         $user = Auth::user();
@@ -246,25 +160,6 @@ class UserController extends Controller
         ]);
     }
     
-    /**
-     * @OA\Post(
-     *     path="/profile/location",
-     *     summary="Update user location",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="latitude", type="number", format="float", example=37.7749),
-     *             @OA\Property(property="longitude", type="number", format="float", example=-122.4194),
-     *             @OA\Property(property="location_name", type="string", example="San Francisco, USA")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Location updated successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function updateLocation(Request $request)
     {
         $user = Auth::user();
@@ -298,29 +193,9 @@ class UserController extends Controller
         ]);
     }
     
-    /**
-     * @OA\Post(
-     *     path="/profile/images",
-     *     summary="Upload user image to S3",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(property="image", type="string", format="binary")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Image uploaded successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function uploadImage(Request $request)
     {
-        Log::info('UploadImage method called');  // Лог начала работы метода
+        Log::info('UploadImage method called');  
     
         $user = Auth::user();
         Log::info('Authenticated User: ', ['user' => $user]);
@@ -383,24 +258,6 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     
-    
-    /**
-     * @OA\Delete(
-     *     path="/profile/image/{id}",
-     *     summary="Delete user image from S3",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(response=200, description="Image deleted successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=404, description="Image not found")
-     * )
-     */
     public function deleteImage($id)
     {
         $user = Auth::user();
@@ -422,23 +279,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Image deleted successfully']);
     }
     
-    /**
-     * @OA\Post(
-     *     path="/profile/interests",
-     *     summary="Add user interests",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="interests", type="array", @OA\Items(type="integer"), example={1, 2, 3})
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Interests added successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function addInterests(Request $request)
     {
         $user = Auth::user();
@@ -464,23 +304,6 @@ class UserController extends Controller
         ]);
     }
     
-    /**
-     * @OA\Delete(
-     *     path="/profile/interests",
-     *     summary="Remove user interests",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="interests", type="array", @OA\Items(type="integer"), example={1, 2, 3})
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Interests removed successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function removeInterests(Request $request)
     {
         $user = Auth::user();
@@ -506,16 +329,6 @@ class UserController extends Controller
         ]);
     }
     
-    /**
-     * @OA\Get(
-     *     path="/profile",
-     *     summary="Get user profile",
-     *     tags={"Users"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="User profile retrieved successfully"),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
-     */
     public function getProfile()
     {
         $user = Auth::user();
@@ -531,15 +344,6 @@ class UserController extends Controller
         ]);
     }
 
-
-    /**
-     * @OA\Get(
-     *     path="/users",
-     *     summary="Get all users",
-     *     tags={"Users"},
-     *     @OA\Response(response=200, description="Users retrieved successfully")
-     * )
- */
     public function getAllUsers()
     {
         $users = User::getAllUsersWithData();
@@ -549,44 +353,14 @@ class UserController extends Controller
         ]);
     }
 
-
-        /**
-     * @OA\Get(
-     *     path="/recommendations",
-     *     summary="Get recomendations",
-     *     tags={"Recomendations"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Users retrieved successfully")
-     * )
- */
     public function getRecommendations(RecommendationService $service)
     {
-        $user = auth()->user(); // или другой способ
+        $user = auth()->user();  
         $recommendations = $service->recommendForUser($user);
 
         return response()->json($recommendations);
     }
 
-
-        /**
-     * @OA\Post(
-     *     path="/swipe",
-     *     summary="Register a swipe action",
-     *     tags={"Matching"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"target_user_id", "action"},
-     *             @OA\Property(property="target_user_id", type="integer", example=123),
-     *             @OA\Property(property="action", type="string", enum={"like", "dislike"}, example="like")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Swipe recorded successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function swipe(Request $request)
     {
         $user = Auth::user();
@@ -647,16 +421,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/matches",
-     *     summary="Get user's matches",
-     *     tags={"Matching"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Matches retrieved successfully"),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
-     */
     public function getMatches()
     {
         $user = Auth::user();
@@ -682,23 +446,6 @@ class UserController extends Controller
         ]);
     }
 
-/**
-     * @OA\Delete(
-     *     path="/matches/{match_id}",
-     *     summary="Unmatch with a user and delete conversation",
-     *     tags={"Matching"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="match_id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(response=200, description="Unmatched successfully"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=404, description="Match not found")
-     * )
-     */
     public function unmatch($matchId)
     {
         $user = Auth::user();
@@ -731,19 +478,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Unmatched successfully. Conversation deleted.']);
     }
 
-
-    /**
-     * @OA\Get(
-     *     path="/conversations",
-     *     summary="Get all conversations for the authenticated user",
-     *     tags={"Chat"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="List of conversations",
-     *         
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
-     */    
     public function getConversations()
     {
         $user = Auth::user();
@@ -751,54 +485,27 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Get the table name for Messages dynamically to make it robust
-        $messageTable = (new Message())->getTable();
-
         // Eager load necessary relations for efficiency and context
         $conversations = Conversation::where(function ($query) use ($user) {
                 $query->where('user1_id', $user->id)
-                        ->orWhere('user2_id', $user->id);
+                      ->orWhere('user2_id', $user->id);
             })
-            ->with([
-                'user1:id,name', // Assuming 'user1' relationship is defined in Conversation model
-                'user2:id,name', // Assuming 'user2' relationship is defined in Conversation model
-                'lastMessage' => function ($query) use ($messageTable) {
-                    /** @var \Illuminate\Database\Eloquent\Builder $query */
-                    $query->selectRaw(
-                            // Qualify each column with the message table name
-                            "{$messageTable}.id, " .
-                            "{$messageTable}.conversation_id, " .
-                            "{$messageTable}.sender_id, " .
-                            "{$messageTable}.content, " .
-                            "{$messageTable}.created_at"
-                            )
-                            ->with('sender:id,name'); // Eager load the sender of the last message
-                }
-            ])
+            ->with(['user1:id,name', 'user2:id,name', 'lastMessage' => function ($query) {
+                $query->select('id', 'conversation_id', 'sender_id', 'content', 'created_at')
+                      ->with('sender:id,name');
+            }])
             ->orderBy('last_message_at', 'desc') // Sort by most recent activity
             ->paginate(15);
 
+
         // The 'other_participant' accessor will be automatically called if Conversation model is set up
-        // and included in $appends.
+        // We can transform the collection if needed, but the accessor should handle it.
+        // Make sure 'other_participant' is in $appends array of Conversation model
+        // and that 'user1' and 'user2' are in $hidden if you don't want them.
 
         return response()->json($conversations);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/conversations/{conversation_id}/messages",
-     *     summary="Get messages for a specific conversation",
-     *     tags={"Chat"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="conversation_id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\Response(response=200, description="List of messages",
-     *         
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden - Not part of this conversation"),
-     *     @OA\Response(response=404, description="Conversation not found")
-     * )
-     */
     public function getMessages(Request $request, $conversation_id)
     {
         $user = Auth::user();
@@ -825,27 +532,6 @@ class UserController extends Controller
         return response()->json($messages);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/matches/{match_id}/messages",
-     *     summary="Send a message in a match's conversation",
-     *     tags={"Chat"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="match_id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"content"},
-     *             @OA\Property(property="content", type="string", example="Hello there!")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Message sent successfully",),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden - Not part of this match"),
-     *     @OA\Response(response=404, description="Match not found"),
-     *     @OA\Response(response=422, description="Validation errors")
-     * )
-     */
     public function sendMessage(Request $request, $match_id)
     {
         $user = Auth::user();
