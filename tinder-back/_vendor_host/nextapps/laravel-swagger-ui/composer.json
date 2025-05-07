@@ -1,0 +1,63 @@
+{
+    "name": "wotz/laravel-swagger-ui",
+    "description": "Add Swagger UI to a Laravel application.",
+    "keywords": [
+        "laravel",
+        "swagger",
+        "swagger-ui",
+        "openapi"
+    ],
+    "homepage": "https://github.com/wotzebra/laravel-swagger-ui",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Günther Debrauwer",
+            "email": "gunther.debrauwer@whoownsthezebra.be",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3|^8.4",
+        "ext-json": "*",
+        "laravel/framework": "^9.0|^10.0|^11.0|^12.0"
+    },
+    "suggest": {
+        "ext-yaml": "*"
+    },
+    "require-dev": {
+        "adamwojs/php-cs-fixer-phpdoc-force-fqcn": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "guzzlehttp/guzzle": "^7.5",
+        "jasonmccreary/laravel-test-assertions": "^2.3",
+        "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^9.5|^10.0|^11.5.3",
+        "squizlabs/php_codesniffer": "^3.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wotz\\SwaggerUi\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Wotz\\SwaggerUi\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "lint": "vendor/bin/php-cs-fixer fix && vendor/bin/phpcs --colors --report-full",
+        "lint-dry": "vendor/bin/php-cs-fixer fix --dry-run --diff-format=udiff && vendor/bin/phpcs --colors --report-full"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wotz\\SwaggerUi\\SwaggerUiServiceProvider"
+            ]
+        }
+    }
+}

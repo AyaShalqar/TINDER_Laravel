@@ -318,50 +318,69 @@ class UserController extends Controller
      */
     public function uploadImage(Request $request)
     {
+        Log::info('UploadImage method called');  // Лог начала работы метода
+    
         $user = Auth::user();
-        
+        Log::info('Authenticated User: ', ['user' => $user]);
+    
         if (!$user) {
+            Log::warning('Unauthorized access attempt');
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        
+    
+        Log::info('Validating request data');
         $validator = Validator::make($request->all(), [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        
-        
+    
         if ($validator->fails()) {
+            Log::warning('Validation failed', ['errors' => $validator->errors()]);
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        
+    
         $imageFile = $request->file('image');
-        Log::info("loh");
+        Log::info('Image file received', ['file' => $imageFile]);
+    
         if ($imageFile) {
             $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
             $filePath = "user_photos/{$imageName}";
+            Log::info('Generated image name and file path', [
+                'imageName' => $imageName,
+                'filePath' => $filePath
+            ]);
+    
             try {
-                Storage::disk('s3')->put($filePath, file_get_contents($imageFile), 'public');
-                Storage::disk('s3')->setVisibility($filePath, 'public');
+                Log::info('Attempting to move file to public storage path');
+                // Save the image to the local storage (public folder)
+                $imageFile->move(public_path('storage/user_photos'), $imageName);
+                Log::info('Image successfully saved to public storage');
+    
             } catch (\Exception $e) {
-                Log::error("S3 upload error: " . $e->getMessage());
-                return response()->json(['message' => 'Failed to upload image'], 500);
+                Log::error("Local storage upload error: " . $e->getMessage(), [
+                    'stack_trace' => $e->getTraceAsString()
+                ]);
+                return response()->json(['message' => 'Failed to upload image. Exception: ' . $e->getMessage()], 500);
             }
-            
-            $imageUrl = Storage::disk('s3')->url($filePath);
-
-
+    
+            $imageUrl = asset("storage/user_photos/{$imageName}");
+            Log::info('Generated image URL', ['url' => $imageUrl]);
+    
             $userImage = $user->images()->create([
                 'image_path' => $imageUrl,
                 'user_id' => $user->id
             ]);
-
+            Log::info('Image record successfully created in database', ['userImage' => $userImage]);
+    
             return response()->json([
                 'message' => 'Image uploaded successfully',
                 'image' => $userImage
             ]);
         }
-        
+    
+        Log::warning('No image uploaded');
         return response()->json(['message' => 'No image uploaded'], 400);
     }
+    
     
     /**
      * @OA\Delete(
