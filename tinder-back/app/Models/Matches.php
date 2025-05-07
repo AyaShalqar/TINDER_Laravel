@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Matches extends Model
 {
@@ -20,5 +21,10 @@ class Matches extends Model
 
     public function user2() {
         return $this->belongsTo(User::class, 'user2_id');
+    }
+
+    public function conversation(): HasOne
+    {
+        return $this->hasOne(Conversation::class, 'match_id');
     }
 }

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Services\RecommendationService;
 use App\Models\User;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\UserBio;
 use App\Models\UserImages;
 use App\Models\Interest;
@@ -680,10 +682,10 @@ class UserController extends Controller
         ]);
     }
 
-    /**
+/**
      * @OA\Delete(
      *     path="/matches/{match_id}",
-     *     summary="Unmatch with a user",
+     *     summary="Unmatch with a user and delete conversation",
      *     tags={"Matching"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -705,16 +707,187 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         
-        $match = $user->matches()
-            ->where('id', $matchId)
+        // Find the match ensuring the current user is part of it
+        $match = Matches::where('id', $matchId)
+            ->where(function ($query) use ($user) {
+                $query->where('user1_id', $user->id)
+                      ->orWhere('user2_id', $user->id);
+            })
             ->first();
         
         if (!$match) {
-            return response()->json(['message' => 'Match not found'], 404);
+            return response()->json(['message' => 'Match not found or you are not part of this match'], 404);
         }
         
-        $match->delete();
+        // Delete associated conversation if it exists
+        // The conversation model has match_id, so we can find it this way
+        // Or using the relationship if you defined it on Matches model
+        if ($match->conversation) {
+            $match->conversation->delete(); // This will also delete messages due to onDelete('cascade')
+        }
         
-        return response()->json(['message' => 'Unmatched successfully']);
+        $match->delete(); // Delete the match itself
+        
+        return response()->json(['message' => 'Unmatched successfully. Conversation deleted.']);
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/conversations",
+     *     summary="Get all conversations for the authenticated user",
+     *     tags={"Chat"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="List of conversations",
+     *         
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function getConversations()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Eager load necessary relations for efficiency and context
+        $conversations = Conversation::where(function ($query) use ($user) {
+                $query->where('user1_id', $user->id)
+                      ->orWhere('user2_id', $user->id);
+            })
+            ->with(['user1:id,name', 'user2:id,name', 'lastMessage' => function ($query) {
+                $query->select('id', 'conversation_id', 'sender_id', 'content', 'created_at')
+                      ->with('sender:id,name');
+            }])
+            ->orderBy('last_message_at', 'desc') // Sort by most recent activity
+            ->paginate(15);
+
+
+        // The 'other_participant' accessor will be automatically called if Conversation model is set up
+        // We can transform the collection if needed, but the accessor should handle it.
+        // Make sure 'other_participant' is in $appends array of Conversation model
+        // and that 'user1' and 'user2' are in $hidden if you don't want them.
+
+        return response()->json($conversations);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/conversations/{conversation_id}/messages",
+     *     summary="Get messages for a specific conversation",
+     *     tags={"Chat"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="conversation_id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="List of messages",
+     *         
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=403, description="Forbidden - Not part of this conversation"),
+     *     @OA\Response(response=404, description="Conversation not found")
+     * )
+     */
+    public function getMessages(Request $request, $conversation_id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $conversation = Conversation::find($conversation_id);
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found'], 404);
+        }
+
+        // Authorize: Check if the current user is part of this conversation
+        if ($conversation->user1_id !== $user->id && $conversation->user2_id !== $user->id) {
+            return response()->json(['message' => 'Forbidden. You are not part of this conversation.'], 403);
+        }
+
+        $messages = $conversation->messages()
+            ->with('sender:id,name') // Eager load sender details
+            ->orderBy('created_at', 'asc')
+            ->paginate(20); // Paginate messages
+
+        return response()->json($messages);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/matches/{match_id}/messages",
+     *     summary="Send a message in a match's conversation",
+     *     tags={"Chat"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="match_id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="Hello there!")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Message sent successfully",),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=403, description="Forbidden - Not part of this match"),
+     *     @OA\Response(response=404, description="Match not found"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
+    public function sendMessage(Request $request, $match_id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $match = Matches::find($match_id);
+
+        if (!$match) {
+            return response()->json(['message' => 'Match not found'], 404);
+        }
+
+        // Authorize: Check if the current user is part of this match
+        if ($match->user1_id !== $user->id && $match->user2_id !== $user->id) {
+            return response()->json(['message' => 'Forbidden. You are not part of this match.'], 403);
+        }
+
+        // Determine user1_id and user2_id consistently for conversation uniqueness
+        // Smaller ID first is a common convention
+        $u1_id = min($match->user1_id, $match->user2_id);
+        $u2_id = max($match->user1_id, $match->user2_id);
+
+        // Find or create the conversation
+        $conversation = Conversation::firstOrCreate(
+            [
+                'match_id' => $match->id, // Link to the match
+                'user1_id' => $u1_id,
+                'user2_id' => $u2_id,
+            ]
+        );
+
+        $message = $conversation->messages()->create([
+            'sender_id' => $user->id,
+            'content' => $request->content,
+        ]);
+        
+        // Update last_message_at on conversation for sorting
+        $conversation->last_message_at = $message->created_at;
+        $conversation->save();
+
+        $message->load('sender:id,name'); // Eager load sender for the response
+
+        // Here you would typically broadcast an event for real-time chat
+        // event(new NewMessageSent($message));
+
+        return response()->json($message, 201);
     }
 }

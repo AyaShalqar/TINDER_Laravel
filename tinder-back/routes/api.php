@@ -50,4 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/swipe', [UserController::class, 'swipe'])->middleware('auth:sanctum');
     Route::get('/matches', [UserController::class, 'getMatches'])->middleware('auth:sanctum');
     Route::delete('/matches/{match_id}', [UserController::class, 'unmatch'])->middleware('auth:sanctum');
+
+
+    Route::get('/conversations', [UserController::class, 'getConversations']);
+    Route::get('/conversations/{conversation_id}/messages', [UserController::class, 'getMessages']);
+    Route::post('/matches/{match_id}/messages', [UserController::class, 'sendMessage']);
 });
