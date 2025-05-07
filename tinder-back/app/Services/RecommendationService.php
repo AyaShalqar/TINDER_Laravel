@@ -16,7 +16,7 @@ class RecommendationService
         $userInterests = $user->interests->pluck('id')->toArray();
         $userBio = $user->userBio;
 
-        return User::with(['interests', 'userBio'])
+        return User::with(['interests', 'userBio', 'images'])
             ->where('id', '!=', $user->id)
             ->get()
             ->filter(function ($otherUser) use ($user) {
