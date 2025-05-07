@@ -16,6 +16,7 @@ const swipe = async (targetUserId, action) => {
 const getMatches = async () => {
   try {
     const response = await api.get('/matches');
+    console.log(response.data.matches)
     return response.data.matches; // Array of match objects
   } catch (error) {
     console.error('Get matches error:', error.response?.data || error.message);

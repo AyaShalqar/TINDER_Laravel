@@ -743,7 +743,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
-     */
+     */    
     public function getConversations()
     {
         $user = Auth::user();
@@ -751,23 +751,35 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
+        // Get the table name for Messages dynamically to make it robust
+        $messageTable = (new Message())->getTable();
+
         // Eager load necessary relations for efficiency and context
         $conversations = Conversation::where(function ($query) use ($user) {
                 $query->where('user1_id', $user->id)
-                      ->orWhere('user2_id', $user->id);
+                        ->orWhere('user2_id', $user->id);
             })
-            ->with(['user1:id,name', 'user2:id,name', 'lastMessage' => function ($query) {
-                $query->select('id', 'conversation_id', 'sender_id', 'content', 'created_at')
-                      ->with('sender:id,name');
-            }])
+            ->with([
+                'user1:id,name', // Assuming 'user1' relationship is defined in Conversation model
+                'user2:id,name', // Assuming 'user2' relationship is defined in Conversation model
+                'lastMessage' => function ($query) use ($messageTable) {
+                    /** @var \Illuminate\Database\Eloquent\Builder $query */
+                    $query->selectRaw(
+                            // Qualify each column with the message table name
+                            "{$messageTable}.id, " .
+                            "{$messageTable}.conversation_id, " .
+                            "{$messageTable}.sender_id, " .
+                            "{$messageTable}.content, " .
+                            "{$messageTable}.created_at"
+                            )
+                            ->with('sender:id,name'); // Eager load the sender of the last message
+                }
+            ])
             ->orderBy('last_message_at', 'desc') // Sort by most recent activity
             ->paginate(15);
 
-
         // The 'other_participant' accessor will be automatically called if Conversation model is set up
-        // We can transform the collection if needed, but the accessor should handle it.
-        // Make sure 'other_participant' is in $appends array of Conversation model
-        // and that 'user1' and 'user2' are in $hidden if you don't want them.
+        // and included in $appends.
 
         return response()->json($conversations);
     }

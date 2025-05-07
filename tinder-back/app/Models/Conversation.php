@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne; // Make sure this is imported
 use Illuminate\Support\Facades\Auth;
 
 class Conversation extends Model
@@ -44,7 +44,7 @@ class Conversation extends Model
         return $this->hasMany(Message::class)->orderBy('created_at', 'asc');
     }
 
-    public function lastMessage(): HasMany // Actually a HasOne relationship for the latest
+    public function lastMessage(): HasOne // Corrected return type
     {
         return $this->hasOne(Message::class)->latestOfMany();
     }
@@ -57,9 +57,9 @@ class Conversation extends Model
         }
         $currentUser = Auth::user();
         if ($this->user1_id === $currentUser->id) {
-            return $this->user2;
+            return $this->user2()->withDefault(); // Eager load or provide default to prevent N+1 if user2 might be null
         } elseif ($this->user2_id === $currentUser->id) {
-            return $this->user1;
+            return $this->user1()->withDefault(); // Eager load or provide default
         }
         return null; // Should not happen if the user is part of the conversation
     }

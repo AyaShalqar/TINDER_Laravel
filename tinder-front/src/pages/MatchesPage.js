@@ -18,7 +18,7 @@ const MatchesPage = () => {
       const data = await swipeService.getMatches();
       // Your backend returns { matches: formattedMatches }
       // So, access data.matches
-      setMatches(data.matches || []);
+      setMatches(data || []);
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch matches.';
       setError(errorMessage);
