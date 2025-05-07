@@ -1,0 +1,261 @@
+/* General Chat Page Layout */
+.chat-page-container {
+    display: flex;
+    height: calc(100vh - 60px - 40px); /* Full height minus navbar and padding */
+    /* If your app container has padding, adjust accordingly or remove it for this page */
+    max-height: calc(100vh - 70px); /* Adjust if navbar height is different */
+    background-color: #f4f7f6;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden; /* Important */
+  }
+  
+  .conversations-sidebar {
+    width: 30%;
+    min-width: 250px;
+    max-width: 350px;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+    background-color: #fff;
+  }
+  
+  .chat-view-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Important */
+  }
+  
+  /* Conversation List */
+  .conversation-list {
+    padding: 10px 0;
+  }
+  
+  .conversation-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .conversation-list-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .conversation-list-item.active {
+    background-color: #e6f2ff; /* Light blue for active chat */
+    border-left: 3px solid #007bff;
+    padding-left: 12px;
+  }
+  
+  
+  .conversation-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+  }
+  
+  .conversation-details {
+    flex-grow: 1;
+    overflow: hidden; /* For text truncation */
+  }
+  
+  .conversation-name {
+    font-weight: 600;
+    color: #333;
+    display: block; /* For potential ellipsis */
+  }
+  
+  .conversation-last-message {
+    font-size: 0.85em;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 3px;
+  }
+  .conversation-last-message.italic {
+    font-style: italic;
+    color: #888;
+  }
+  
+  .conversation-time {
+    font-size: 0.75em;
+    color: #999;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+  
+  .loading-text, .empty-text, .error-message {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+  }
+  .error-message {
+    color: red;
+  }
+  
+  
+  /* Chat View */
+  .chat-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill parent */
+  }
+  
+  .chat-view-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+  }
+  
+  .chat-view-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #333;
+  }
+  
+  .messages-container {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #fff; /* Or a subtle pattern */
+    display: flex;
+    flex-direction: column; /* So new messages appear at bottom */
+  }
+  
+  .loading-more-messages {
+    text-align: center;
+    padding: 10px;
+    color: #007bff;
+  }
+  
+  .message-input-form {
+    display: flex;
+    padding: 10px 15px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+  }
+  
+  .message-input-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-right: 10px;
+    font-size: 0.95em;
+  }
+  
+  .message-input-form input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  }
+  
+  
+  .message-input-form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .message-input-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .message-input-form button:disabled {
+    background-color: #cce0ff;
+    cursor: not-allowed;
+  }
+  
+  
+  .chat-view-placeholder {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    color: #888;
+    background-color: #fff;
+  }
+  
+  
+  /* Message Bubble */
+  .message-bubble-container {
+    display: flex;
+    margin-bottom: 10px;
+    max-width: 70%; /* Max width of a bubble */
+  }
+  
+  .message-bubble-container.sender {
+    justify-content: flex-end; /* Aligns sender messages to the right */
+    align-self: flex-end; /* Pushes the container itself to the right */
+  }
+  
+  .message-bubble-container.receiver {
+    justify-content: flex-start;
+    align-self: flex-start;
+  }
+  
+  .message-bubble {
+    padding: 8px 12px;
+    border-radius: 18px;
+    word-wrap: break-word; /* Ensure long words break */
+  }
+  
+  .message-bubble-container.sender .message-bubble {
+    background-color: #007bff; /* Sender bubble color */
+    color: white;
+    border-bottom-right-radius: 4px; /* Tail effect */
+  }
+  
+  .message-bubble-container.receiver .message-bubble {
+    background-color: #e9ecef; /* Receiver bubble color */
+    color: #333;
+    border-bottom-left-radius: 4px; /* Tail effect */
+  }
+  
+  .message-content {
+    margin: 0 0 3px 0;
+    line-height: 1.4;
+  }
+  
+  .message-timestamp {
+    font-size: 0.7em;
+    display: block;
+    text-align: right; /* Aligns timestamp within the bubble */
+    opacity: 0.8;
+  }
+  .message-bubble-container.receiver .message-timestamp {
+    color: #555;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .chat-page-container {
+      flex-direction: column;
+      height: calc(100vh - 50px); /* Adjust if navbar is smaller on mobile */
+    }
+  
+    .conversations-sidebar {
+      width: 100%;
+      max-width: none;
+      height: 35%; /* Or a fixed height */
+      min-height: 200px;
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .chat-view-main {
+       height: 65%; /* Remaining height */
+    }
+  }
