@@ -3,17 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Для получения ID текущего пользователя
-use Junges\Kafka\Facades\Kafka; // Используем правильный use для фасада
-use Illuminate\Support\Facades\Log; // Для логирования ошибок
+use Illuminate\Support\Facades\Auth; 
+use Junges\Kafka\Facades\Kafka; 
+use Illuminate\Support\Facades\Log; 
 
-// Назовите класс контроллера как вам удобно, например SwipeController
 class SwipeController extends Controller
 {
-    /**
-     * Обработка свайпа пользователя.
-     * POST /swipes
-     */
     public function store(Request $request)
     {
         // 1. Получаем и валидируем данные о свайпе
@@ -22,7 +17,7 @@ class SwipeController extends Controller
             'action' => 'required|string|in:like,pass',
         ]);
 
-        $swiperUserId = Auth::id(); // ID того, кто свайпает
+        $swiperUserId = Auth::id(); 
         $swipedUserId = $validatedData['swiped_user_id'];
         $action = $validatedData['action'];
 
@@ -36,21 +31,21 @@ class SwipeController extends Controller
             'swiper_user_id' => $swiperUserId,
             'swiped_user_id' => $swipedUserId,
             'action'         => $action,
-            'timestamp'      => now()->toISOString(), // Время свайпа в UTC
+            'timestamp'      => now()->toISOString(),
         ];
 
        // 3. Отправляем сообщение в Kafka
        try {
         // Сначала создаем "строителя" без аргументов
         $producerBuilder = Kafka::publish()
-             ->onTopic('user_swipes')           // Указываем топик через ->onTopic()
-             ->withBody($messagePayload)       // Передаем тело сообщения (массив)
-             ->withKafkaKey((string)$swiperUserId); // Указываем ключ
+             ->onTopic('user_swipes')         
+             ->withBody($messagePayload)      
+             ->withKafkaKey((string)$swiperUserId); 
 
         // Отправляем настроенное сообщение
         $producerBuilder->send();
 
-        Log::info('Swipe message sent to Kafka', $messagePayload); // Логируем успех
+        Log::info('Swipe message sent to Kafka', $messagePayload); 
 
     } catch (\Exception $e) {
         Log::error('Failed to send swipe message to Kafka: ' . $e->getMessage(), $messagePayload);
@@ -59,6 +54,6 @@ class SwipeController extends Controller
     }
 
         // 4. Отвечаем пользователю БЫСТРО
-        return response()->json(['message' => 'Swipe received'], 202); // 202 Accepted
+        return response()->json(['message' => 'Swipe received'], 202); 
     }
 }
