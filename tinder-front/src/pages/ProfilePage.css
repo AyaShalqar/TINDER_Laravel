@@ -1,0 +1,172 @@
+/* Основной контейнер профиля */
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Заголовок профиля */
+  .profile-title {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+  
+  /* Ссылка редактирования */
+  .edit-profile-link {
+    display: inline-block;
+    background-color: #4a6fa5;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .edit-profile-link:hover {
+    background-color: #3a5a8c;
+  }
+  
+  /* Секции профиля */
+  .profile-section {
+    margin-bottom: 25px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title {
+    color: #444;
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+  
+  /* Детали профиля */
+  .profile-detail {
+    margin-bottom: 10px;
+    display: flex;
+  }
+  
+  .detail-label {
+    font-weight: bold;
+    min-width: 180px;
+    color: #555;
+  }
+  
+  .detail-value {
+    color: #333;
+  }
+  
+  /* Список интересов */
+  .interests-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .interest-item {
+    background-color: #e0e7ff;
+    color: #4a6fa5;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+  }
+  
+  /* Галерея изображений */
+  .images-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  .image-container {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  
+  .profile-image:hover {
+    transform: scale(1.03);
+  }
+  
+  .delete-image-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .image-container:hover .delete-image-btn {
+    opacity: 1;
+  }
+  
+  /* Сообщения об ошибках и загрузке */
+  .loading-message {
+    color: #666;
+    font-style: italic;
+  }
+  
+  .error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .retry-button {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .profile-container {
+      padding: 15px;
+    }
+    
+    .profile-detail {
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      margin-bottom: 3px;
+    }
+    
+    .images-gallery {
+      justify-content: center;
+    }
+  }

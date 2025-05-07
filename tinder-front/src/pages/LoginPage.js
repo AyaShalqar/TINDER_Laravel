@@ -2,21 +2,26 @@ import React from 'react';
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import './LoginPage.css';
 
 const LoginPage = () => {
   const { login } = useAuth();
 
   const handleLogin = async (credentials) => {
-    // AuthForm provides all fields, but login only needs email and password
     await login({ email: credentials.email, password: credentials.password });
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <AuthForm onSubmit={handleLogin} submitText="Login" />
-      <p>Don't have an account? <Link to="/register">Register here</Link></p>
+    <div className="login-page">
+      <div className="login-container">
+        <h2 className="login-title">Login</h2>
+        <AuthForm onSubmit={handleLogin} submitText="Login" />
+        <p className="register-link">
+          Don't have an account? <Link to="/register">Register here</Link>
+        </p>
+      </div>
     </div>
+
   );
 };
 

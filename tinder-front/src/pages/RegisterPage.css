@@ -1,0 +1,61 @@
+.register-page {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end; /* Content pushed to the bottom */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #FD297B 0%, #FF655B 100%); /* Tinder-like gradient */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: 30px 20px; /* Overall padding */
+    box-sizing: border-box;
+    z-index: 100; 
+    overflow-y: auto; /* Allows scrolling on small viewports if content overflows */
+  
+}
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh; /* Ensure the container takes up at least most of the viewport height */
+  padding: 2rem;
+}
+
+.register-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.register-form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-prompt {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #555;
+  text-align: center; /* Center the text */
+}
+
+.login-prompt a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
+}
