@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne; // Make sure this is imported
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 class Conversation extends Model
@@ -44,29 +44,29 @@ class Conversation extends Model
         return $this->hasMany(Message::class)->orderBy('created_at', 'asc');
     }
 
-    public function lastMessage(): HasOne // Corrected return type
+    public function lastMessage(): HasOne 
     {
         return $this->hasOne(Message::class)->latestOfMany();
     }
 
-    // Helper to get the other participant in the conversation
+    
     public function getOtherParticipantAttribute()
     {
         if (!Auth::check()) {
-            return null; // Or throw an exception
+            return null; 
         }
         $currentUser = Auth::user();
         if ($this->user1_id === $currentUser->id) {
-            return $this->user2()->withDefault(); // Eager load or provide default to prevent N+1 if user2 might be null
+            return $this->user2()->withDefault(); 
         } elseif ($this->user2_id === $currentUser->id) {
-            return $this->user1()->withDefault(); // Eager load or provide default
+            return $this->user1()->withDefault();
         }
-        return null; // Should not happen if the user is part of the conversation
+        return null; 
     }
 
-    // Append it to model serialization
+    
     protected $appends = ['other_participant'];
 
-    // Hide individual user relations if 'other_participant' is preferred
+   
     protected $hidden = ['user1', 'user2'];
 }

@@ -1,24 +1,23 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import your page components
+
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import MatchesPage from './pages/MatchesPage';
-import ChatPage from './pages/ChatPage'; // <-- Import ChatPage
+import ChatPage from './pages/ChatPage'; 
 import WelcomePage from './pages/WelcomePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 import './App.css';
 
-// AppContent component remains the same...
+
 function App() {
   return (
     <BrowserRouter>
@@ -68,7 +67,7 @@ const AppContent = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/edit" element={<EditProfilePage />} />
             <Route path="/matches" element={<MatchesPage />} />
-            <Route path="/chat" element={<ChatPage />} /> {/* <-- Add Chat Route */}
+            <Route path="/chat" element={<ChatPage />} /> 
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

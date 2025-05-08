@@ -9,7 +9,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user, updateUserContext } = useAuth(); // Get user from context for initial state and update
+  const { user, updateUserContext } = useAuth(); 
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
@@ -17,7 +17,7 @@ const ProfilePage = () => {
     try {
       const data = await userService.getProfile();
       setProfile(data);
-      updateUserContext(data); // Keep auth context in sync
+      updateUserContext(data); 
     } catch (err) {
       setError(err.message || 'Failed to load profile.');
     } finally {
@@ -26,12 +26,11 @@ const ProfilePage = () => {
   }, [updateUserContext]);
 
   useEffect(() => {
-    // If profile already in AuthContext and matches current user, use it
-    // Otherwise, fetch fresh data
+
     if (user && user.id && (!profile || profile.id !== user.id)) {
         fetchProfile();
     } else if (user) {
-        setProfile(user); // Use user from context if it's up-to-date
+        setProfile(user); 
         setLoading(false);
     }
   }, [user, fetchProfile, profile]);
@@ -58,7 +57,6 @@ const ProfilePage = () => {
     }
   };
   
-  // Helper to calculate age
   const calculateAge = (birthDateString) => {
     if (!birthDateString) return 'N/A';
     const birthDate = new Date(birthDateString);

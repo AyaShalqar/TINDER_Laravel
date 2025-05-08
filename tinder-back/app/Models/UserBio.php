@@ -25,7 +25,7 @@ class UserBio extends Model
     ];
 
     protected $casts = [
-        'languages' => 'array', // или 'json'
+        'languages' => 'array',
         'latitude' => 'float',
         'longitude' => 'float',
     ];

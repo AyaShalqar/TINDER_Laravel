@@ -31,7 +31,7 @@ const AuthForm = ({ onSubmit, submitText, isRegister = false }) => {
       await onSubmit(formData);
     } catch (err) {
       setError(err.message || 'An error occurred. Please check console.');
-      if (err.errors) { // Laravel validation errors
+      if (err.errors) { 
         const firstErrorKey = Object.keys(err.errors)[0];
         setError(`Validation Error: ${err.errors[firstErrorKey][0]}`);
       }

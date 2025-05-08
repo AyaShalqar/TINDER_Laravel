@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import tinderLogo from '../assets/images/tinder-logo.svg';
-import './WelcomePage.css'; // Make sure this path is correct
+import './WelcomePage.css'; 
 
 const WelcomePage = () => {
   return (
@@ -9,7 +9,6 @@ const WelcomePage = () => {
       <div className="welcome-overlay"></div>
       <div className="welcome-content">
 
-                {/* Option 2: Image Logo */}
         <img src={tinderLogo} alt="Flame Logo" className="welcome-logo-image" />
         <h1 className="welcome-logo-text">Tinder</h1>         
         <p className="welcome-tagline">

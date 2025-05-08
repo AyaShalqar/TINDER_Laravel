@@ -7,25 +7,19 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('authToken'));
-  const [loading, setLoading] = useState(true); // To check auth status on initial load
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   useEffect(() => {
     const verifyToken = async () => {
       if (token) {
         try {
-          // You might want an endpoint like /api/user to verify the token
-          // and get fresh user data. For now, we'll assume the token means logged in
-          // and fetch profile if token exists.
+
           const currentUser = JSON.parse(localStorage.getItem('authUser'));
           if (currentUser) {
               setUser(currentUser);
           } else {
-            // If no user in localStorage but token exists, try fetching profile
-            // This requires a /profile endpoint that returns user if token is valid
-            // For simplicity, we're skipping a dedicated verify endpoint.
-            // If your /profile needs auth and token is invalid, it will fail,
-            // then we can clear the token.
+
             console.warn("Token exists but no user in localStorage. Consider fetching user profile here.");
           }
         } catch (error) {
@@ -47,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('authUser', JSON.stringify(data.user));
     setToken(data.access_token);
     setUser(data.user);
-    navigate('/'); // Navigate to home/recommendations
+    navigate('/'); 
     return data;
   };
 
@@ -57,13 +51,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('authUser', JSON.stringify(data.user));
     setToken(data.access_token);
     setUser(data.user);
-    navigate('/'); // Navigate to home/recommendations
+    navigate('/'); 
     return data;
   };
 
   const logout = () => {
-    // Optionally call a backend /logout endpoint if it invalidates the token server-side
-    // await authService.logout();
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
     setToken(null);

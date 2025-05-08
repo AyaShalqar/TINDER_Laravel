@@ -24,9 +24,9 @@ const ImageUpload = ({ onImageUploaded }) => {
 
     try {
       const response = await userService.uploadImage(formData);
-      onImageUploaded(response.image); // Pass the new image data up
-      setFile(null); // Reset file input
-      e.target.reset(); // Reset form to clear file input display
+      onImageUploaded(response.image); 
+      setFile(null); 
+      e.target.reset(); 
     } catch (err) {
       setError(err.message || 'Failed to upload image.');
     } finally {

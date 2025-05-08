@@ -1,4 +1,3 @@
-/* Основной контейнер профиля */
 .profile-container {
     margin: 0 auto;
     padding: 20px;
@@ -9,7 +8,6 @@
     max-width: 50vw !important;
   }
   
-  /* Заголовок профиля */
   .profile-title {
     color: #333;
     font-size: 28px;
@@ -17,8 +15,7 @@
     border-bottom: 2px solid #eaeaea;
     padding-bottom: 10px;
   }
-  
-  /* Ссылка редактирования */
+
   .edit-profile-link {
     display: inline-block;
     background-color: #4a6fa5;
@@ -34,7 +31,6 @@
     background-color: #3a5a8c;
   }
   
-  /* Секции профиля */
   .profile-section {
     margin-bottom: 25px;
     background-color: white;
@@ -51,7 +47,6 @@
     padding-bottom: 5px;
   }
   
-  /* Детали профиля */
   .profile-detail {
     margin-bottom: 10px;
     display: flex;
@@ -67,7 +62,6 @@
     color: #333;
   }
   
-  /* Список интересов */
   .interests-list {
     display: flex;
     flex-wrap: wrap;
@@ -84,7 +78,6 @@
     font-size: 14px;
   }
   
-  /* Галерея изображений */
   .images-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -129,7 +122,6 @@
     opacity: 1;
   }
   
-  /* Сообщения об ошибках и загрузке */
   .loading-message {
     color: #666;
     font-style: italic;
@@ -153,7 +145,6 @@
     cursor: pointer;
   }
   
-  /* Адаптивность */
   @media (max-width: 768px) {
     .profile-container {
       padding: 15px;

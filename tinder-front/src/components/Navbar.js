@@ -1,15 +1,14 @@
-// src/components/Navbar.js
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth'; // Make sure this hook is correctly set up
-import './Navbar.css'; // Подключаем стили
+import { useAuth } from '../hooks/useAuth'; 
+import './Navbar.css'; 
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); // This should clear the token and user state in AuthContext
+    logout(); 
     navigate('/login');
   };
 

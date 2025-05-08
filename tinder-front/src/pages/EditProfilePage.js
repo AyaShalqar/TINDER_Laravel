@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import userService from '../services/userService'; // Ensure this path is correct
+import userService from '../services/userService'; 
 import { useAuth } from '../hooks/useAuth';
 
 const EditProfilePage = () => {
@@ -59,7 +59,7 @@ const EditProfilePage = () => {
       setSelectedInterests(currentUserInterestIds);
       setInitialUserInterestIds(currentUserInterestIds);
 
-      const availableInterests = await userService.getAllAvailableInterests(); // Now calls the real API
+      const availableInterests = await userService.getAllAvailableInterests(); 
       setAllInterests(availableInterests || []);
     } catch (err) {
       const errorMessage = err.message || (err.errors ? JSON.stringify(err.errors) : 'Failed to load profile data.');
@@ -70,11 +70,10 @@ const EditProfilePage = () => {
   }, []);
 
   useEffect(() => {
-    if (user) { // Only fetch if user is available from useAuth
+    if (user) { 
         fetchProfileData();
     } else {
-        // Handle case where user is not yet loaded or not authenticated
-        // navigate('/login'); // Or show an appropriate message
+
         setLoading(false);
         setError("User not authenticated or profile data unavailable.");
     }
@@ -103,7 +102,7 @@ const EditProfilePage = () => {
     setSuccess('');
 
     try {
-      // Update basic profile
+
       const basicProfileData = {
         name: formData.name,
         phone_number: formData.phone_number,
@@ -114,7 +113,6 @@ const EditProfilePage = () => {
       };
       await userService.updateProfile(basicProfileData);
 
-      // Update bio (which includes location in your UserController@updateBio)
       const bioData = {
         bio: formData.bio,
         height: formData.height ? parseInt(formData.height) : null,
@@ -123,20 +121,13 @@ const EditProfilePage = () => {
         zodiac_sign: formData.zodiac_sign,
         education: formData.education,
         children_preference: formData.children_preference,
-        // Location fields are part of bio update in your UserController
+
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         location_name: formData.location_name,
       };
       await userService.updateBio(bioData);
       
-      // Note: If you want to update location separately, you would call:
-      // await userService.updateLocation({ 
-      //   latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-      //   longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-      //   location_name: formData.location_name 
-      // });
-      // However, your UserController@updateBio already handles these. If you split it, adjust here.
 
       const interestsToAdd = Array.from(selectedInterests).filter(id => !initialUserInterestIds.has(id));
       const interestsToRemove = Array.from(initialUserInterestIds).filter(id => !selectedInterests.has(id));
@@ -159,7 +150,7 @@ const EditProfilePage = () => {
       setTimeout(() => navigate('/profile'), 1500);
     } catch (err) {
       let errorMessage = 'Failed to update profile.';
-      if (err.errors) { // Laravel validation errors
+      if (err.errors) {
         const firstErrorKey = Object.keys(err.errors)[0];
         errorMessage = `Validation Error: ${err.errors[firstErrorKey][0]}`;
       } else if (err.message) {
@@ -174,7 +165,6 @@ const EditProfilePage = () => {
   };
 
   if (loading) return <p>Loading editor...</p>;
-  // Removed the !formData.name condition for error display to show errors even if form partially loaded
   if (error && !success) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
 

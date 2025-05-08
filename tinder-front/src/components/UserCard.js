@@ -3,7 +3,6 @@ import React from 'react';
 const UserCard = ({ user, onLike, onDislike }) => {
   if (!user) return <p>No more users to show.</p>;
 
-  // Helper to calculate age
   const calculateAge = (birthDateString) => {
     if (!birthDateString) return 'N/A';
     const birthDate = new Date(birthDateString);

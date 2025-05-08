@@ -4,9 +4,9 @@ const swipe = async (targetUserId, action) => {
   try {
     const response = await api.post('/swipe', {
       target_user_id: targetUserId,
-      action: action, // 'like' or 'dislike'
+      action: action, 
     });
-    return response.data; // { message: '...', match: true/false, matched_user_id (optional) }
+    return response.data; 
   } catch (error) {
     console.error('Swipe error:', error.response?.data || error.message);
     throw error.response?.data || new Error('Swipe action failed');
@@ -17,7 +17,7 @@ const getMatches = async () => {
   try {
     const response = await api.get('/matches');
     console.log(response.data.matches)
-    return response.data.matches; // Array of match objects
+    return response.data.matches; 
   } catch (error) {
     console.error('Get matches error:', error.response?.data || error.message);
     throw error.response?.data || new Error('Failed to fetch matches');

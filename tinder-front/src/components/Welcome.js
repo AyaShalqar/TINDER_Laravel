@@ -1,18 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './WelcomePage.css';
-// Optional: If you have a logo image
 // import logoImage from '../../assets/images/logo.png'; 
 
 const WelcomePage = () => {
   return (
     <div className="welcome-page">
-      <div className="welcome-overlay"></div> {/* For better text readability over image */}
+      <div className="welcome-overlay"></div> 
       <div className="welcome-content">
-        {/* Option 1: Text Logo */}
+
         <h1 className="welcome-logo-text">Flame</h1> 
-        {/* Option 2: Image Logo */}
-        {/* <img src={logoImage} alt="Flame Logo" className="welcome-logo-image" /> */}
+
         
         <p className="welcome-tagline">
           Swipe Right® on your next adventure.

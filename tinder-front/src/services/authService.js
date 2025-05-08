@@ -20,18 +20,10 @@ const login = async (credentials) => {
   }
 };
 
-// Optional: if you have a backend logout
-// const logout = async () => {
-//   try {
-//     await api.post('/logout');
-//   } catch (error) {
-//     console.error('Logout error:', error.response?.data || error.message);
-//     // Don't throw, just log, as client-side logout will proceed
-//   }
-// };
+
 
 export default {
   register,
   login,
-  // logout,
+
 };

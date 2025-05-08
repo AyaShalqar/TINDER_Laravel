@@ -2,7 +2,7 @@ import React from 'react';
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import './RegisterPage.css'; // Импортируйте файл CSS
+import './RegisterPage.css'; 
 
 const RegisterPage = () => {
   const { register } = useAuth();

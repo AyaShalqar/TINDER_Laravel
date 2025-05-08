@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import MessageBubble from './MessageBubble';
-import { sendMessageToMatch, getMessagesForConversation } from '../../services/api'; // Or sendMessageToConversation
+import { sendMessageToMatch, getMessagesForConversation } from '../../services/api'; 
 import { AuthContext } from '../../contexts/AuthContext';
 import './ChatStyles.css';
 
 const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
-  const { user } = useContext(AuthContext); // Get current user
+  const { user } = useContext(AuthContext); 
   const [messages, setMessages] = useState([]);
   const [newMessageContent, setNewMessageContent] = useState('');
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -17,24 +17,23 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
 
 
   const activeConversationId = selectedConversation?.id;
-  const activeMatchId = selectedMatch?.match_id; // The match_id to send messages
+  const activeMatchId = selectedMatch?.match_id; 
   const otherParticipant = selectedConversation?.other_participant || selectedMatch?.user;
 
 
   useEffect(() => {
-    // Reset messages and pagination when conversation changes
+    
     setMessages([]);
     setCurrentPage(1);
     setHasMoreMessages(true);
 
     if (activeConversationId) {
-      fetchMessages(activeConversationId, 1, true); // true to indicate initial load
+      fetchMessages(activeConversationId, 1, true); 
     } else if (selectedMatch && !activeConversationId) {
-      // This case is if we come from MatchesPage with a match but no existing conversation yet
-      // We don't fetch messages, but we are ready to send the first one.
+
       setMessages([]);
     }
-  }, [activeConversationId, selectedMatch]); // Rerun if selectedConversation or selectedMatch changes
+  }, [activeConversationId, selectedMatch]); 
 
 
   const scrollToBottom = (behavior = 'smooth') => {
@@ -42,8 +41,8 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
   };
 
   useEffect(() => {
-    if (messages.length > 0 && currentPage === 1) { // Scroll to bottom only on initial load or new own message
-        scrollToBottom('auto'); // 'auto' for initial load is less jumpy
+    if (messages.length > 0 && currentPage === 1) { 
+        scrollToBottom('auto'); 
     }
   }, [messages, currentPage]);
 
@@ -58,7 +57,7 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
       setHasMoreMessages(data.links.next !== null);
       setCurrentPage(page);
       if (isInitialLoad && data.data.length > 0) {
-        // Use timeout to ensure DOM is updated for scrolling
+
         setTimeout(() => scrollToBottom('auto'), 0);
       }
     } catch (err) {
@@ -72,9 +71,7 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
     e.preventDefault();
     if (!newMessageContent.trim() || !user) return;
 
-    // We need match_id to send a message as per backend.
-    // If we have a selectedConversation, it has match_id.
-    // If we only have selectedMatch (from MatchesPage, starting a new chat), it IS the match.
+
     const matchIdToSend = selectedConversation?.match_id || activeMatchId;
 
     if (!matchIdToSend) {
@@ -82,17 +79,17 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
       return;
     }
 
-    const tempMessageId = Date.now(); // For optimistic update
+    const tempMessageId = Date.now(); 
     const optimisticMessage = {
       id: tempMessageId,
       content: newMessageContent,
       sender_id: user.id,
       sender: { id: user.id, name: user.name },
       created_at: new Date().toISOString(),
-      conversation_id: activeConversationId // Might be null if it's the first message
+      conversation_id: activeConversationId 
     };
 
-    // Optimistic update
+
     setMessages(prev => [...prev, optimisticMessage]);
     setNewMessageContent('');
     setTimeout(() => scrollToBottom('smooth'), 0);
@@ -100,19 +97,17 @@ const ChatView = ({ selectedMatch, selectedConversation, onNewMessage }) => {
 
     try {
       const sentMessage = await sendMessageToMatch(matchIdToSend, newMessageContent);
-      // Replace optimistic message with actual message from server
+
       setMessages(prev => prev.map(msg => msg.id === tempMessageId ? sentMessage : msg));
       
-      // If this was the first message, the conversation is now created.
-      // The `sentMessage` should contain `conversation_id`.
-      // We need to inform the parent (ChatPage) to update its conversation list or selectedConversation
+
       if (onNewMessage) {
-        onNewMessage(sentMessage); // Pass the full message, ChatPage can derive conversation
+        onNewMessage(sentMessage); 
       }
 
     } catch (err) {
       setError('Failed to send message.');
-      // Revert optimistic update if needed, or show error on the message itself
+
       setMessages(prev => prev.filter(msg => msg.id !== tempMessageId));
     }
   };

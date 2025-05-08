@@ -1,6 +1,5 @@
-// src/components/MatchCard.js
 import React from 'react';
-// import './MatchCard.css'; // Optional: if you have specific styles for the card
+// import './MatchCard.css'; 
 
 const MatchCard = ({ match, onUnmatch, onChat }) => {
   if (!match || !match.user) {
@@ -29,7 +28,7 @@ const MatchCard = ({ match, onUnmatch, onChat }) => {
   );
 };
 
-// Basic inline styles (consider moving to a CSS file for better organization)
+
 const cardStyle = {
   border: '1px solid #ddd',
   borderRadius: '8px',
@@ -37,8 +36,8 @@ const cardStyle = {
   textAlign: 'center',
   backgroundColor: '#fff',
   boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-  margin: '10px', // Ensure some spacing if not using a grid layout from parent
-  width: '250px', // Example fixed width
+  margin: '10px',
+  width: '250px', 
 };
 
 const imageStyle = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import './ChatStyles.css'; // We'll create this file
+import './ChatStyles.css';
 
 const MessageBubble = ({ message, isSender }) => {
   return (

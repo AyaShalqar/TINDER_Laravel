@@ -1,13 +1,11 @@
-/* General Chat Page Layout */
 .chat-page-container {
     display: flex;
-    height: calc(100vh - 60px - 40px); /* Full height minus navbar and padding */
-    /* If your app container has padding, adjust accordingly or remove it for this page */
-    max-height: calc(100vh - 70px); /* Adjust if navbar height is different */
+    height: calc(100vh - 60px - 40px); 
+    max-height: calc(100vh - 70px); 
     background-color: #f4f7f6;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    overflow: hidden; /* Important */
+    overflow: hidden; 
   }
   
   .conversations-sidebar {
@@ -23,10 +21,10 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Important */
+    overflow: hidden;
   }
   
-  /* Conversation List */
+
   .conversation-list {
     padding: 10px 0;
   }
@@ -45,7 +43,7 @@
   }
   
   .conversation-list-item.active {
-    background-color: #e6f2ff; /* Light blue for active chat */
+    background-color: #e6f2ff; 
     border-left: 3px solid #007bff;
     padding-left: 12px;
   }
@@ -61,13 +59,13 @@
   
   .conversation-details {
     flex-grow: 1;
-    overflow: hidden; /* For text truncation */
+    overflow: hidden; 
   }
   
   .conversation-name {
     font-weight: 600;
     color: #333;
-    display: block; /* For potential ellipsis */
+    display: block; 
   }
   
   .conversation-last-message {
@@ -99,12 +97,11 @@
     color: red;
   }
   
-  
-  /* Chat View */
+
   .chat-view {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Fill parent */
+    height: 100%;
   }
   
   .chat-view-header {
@@ -123,9 +120,9 @@
     flex-grow: 1;
     padding: 15px;
     overflow-y: auto;
-    background-color: #fff; /* Or a subtle pattern */
+    background-color: #fff; 
     display: flex;
-    flex-direction: column; /* So new messages appear at bottom */
+    flex-direction: column;
   }
   
   .loading-more-messages {
@@ -189,16 +186,15 @@
   }
   
   
-  /* Message Bubble */
   .message-bubble-container {
     display: flex;
     margin-bottom: 10px;
-    max-width: 70%; /* Max width of a bubble */
+    max-width: 70%; 
   }
   
   .message-bubble-container.sender {
-    justify-content: flex-end; /* Aligns sender messages to the right */
-    align-self: flex-end; /* Pushes the container itself to the right */
+    justify-content: flex-end; 
+    align-self: flex-end; 
   }
   
   .message-bubble-container.receiver {
@@ -209,19 +205,19 @@
   .message-bubble {
     padding: 8px 12px;
     border-radius: 18px;
-    word-wrap: break-word; /* Ensure long words break */
+    word-wrap: break-word;
   }
   
   .message-bubble-container.sender .message-bubble {
-    background-color: #007bff; /* Sender bubble color */
+    background-color: #007bff; 
     color: white;
-    border-bottom-right-radius: 4px; /* Tail effect */
+    border-bottom-right-radius: 4px; 
   }
   
   .message-bubble-container.receiver .message-bubble {
-    background-color: #e9ecef; /* Receiver bubble color */
+    background-color: #e9ecef; 
     color: #333;
-    border-bottom-left-radius: 4px; /* Tail effect */
+    border-bottom-left-radius: 4px; 
   }
   
   .message-content {
@@ -232,30 +228,30 @@
   .message-timestamp {
     font-size: 0.7em;
     display: block;
-    text-align: right; /* Aligns timestamp within the bubble */
+    text-align: right;
     opacity: 0.8;
   }
   .message-bubble-container.receiver .message-timestamp {
     color: #555;
   }
   
-  /* Responsive adjustments */
+
   @media (max-width: 768px) {
     .chat-page-container {
       flex-direction: column;
-      height: calc(100vh - 50px); /* Adjust if navbar is smaller on mobile */
+      height: calc(100vh - 50px);
     }
   
     .conversations-sidebar {
       width: 100%;
       max-width: none;
-      height: 35%; /* Or a fixed height */
+      height: 35%;
       min-height: 200px;
       border-right: none;
       border-bottom: 1px solid #e0e0e0;
     }
     
     .chat-view-main {
-       height: 65%; /* Remaining height */
+       height: 65%; 
     }
   }

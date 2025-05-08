@@ -11,7 +11,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [matchMessage, setMatchMessage] = useState('');
-  const { user } = useAuth(); // Get current user for potential filtering
+  const { user } = useAuth(); 
 
   const fetchRecommendations = useCallback(async () => {
     setLoading(true);
@@ -105,7 +105,6 @@ const HomePage = () => {
       </div>
 
       <div className="bottom-nav">
-        {/* Здесь могут быть навигационные иконки */}
       </div>
     </div>
   );

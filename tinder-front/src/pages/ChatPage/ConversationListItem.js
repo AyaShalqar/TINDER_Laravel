@@ -2,10 +2,10 @@ import React from 'react';
 import './ChatStyles.css';
 
 const ConversationListItem = ({ conversation, onSelect, isActive }) => {
-  const otherUser = conversation.other_participant; // From Conversation model accessor
+  const otherUser = conversation.other_participant; 
   const lastMsg = conversation.last_message;
 
-  if (!otherUser) return null; // Should not happen if data is correct
+  if (!otherUser) return null; 
 
   return (
     <div 
@@ -17,7 +17,7 @@ const ConversationListItem = ({ conversation, onSelect, isActive }) => {
       aria-current={isActive ? "page" : undefined}
     >
       <img 
-        src={otherUser.images?.[0]?.image_path || 'https://via.placeholder.com/50'} // Assuming user object has images
+        src={otherUser.images?.[0]?.image_path || 'https://via.placeholder.com/50'} 
         alt={otherUser.name} 
         className="conversation-avatar"
       />
