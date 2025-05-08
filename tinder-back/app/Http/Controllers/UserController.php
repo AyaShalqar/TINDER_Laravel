@@ -383,6 +383,54 @@ class UserController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     
+
+    public function uploadImageAWS(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        
+        
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        
+        $imageFile = $request->file('image');
+        Log::info("loh");
+        if ($imageFile) {
+            $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
+            $filePath = "user_photos/{$imageName}";
+            try {
+                Storage::disk('s3')->put($filePath, file_get_contents($imageFile), 'public');
+                Storage::disk('s3')->setVisibility($filePath, 'public');
+            } catch (\Exception $e) {
+                Log::error("S3 upload error: " . $e->getMessage());
+                return response()->json(['message' => 'Failed to upload image'], 500);
+            }
+            
+            $imageUrl = Storage::disk('s3')->url($filePath);
+
+
+            $userImage = $user->images()->create([
+                'image_path' => $imageUrl,
+                'user_id' => $user->id
+            ]);
+
+            return response()->json([
+                'message' => 'Image uploaded successfully',
+                'image' => $userImage
+            ]);
+        }
+        
+        return response()->json(['message' => 'No image uploaded'], 400);
+    }
+
     /**
      * @OA\Delete(
      *     path="/profile/image/{id}",
