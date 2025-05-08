@@ -378,7 +378,6 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
         
-        // Check if swipe already exists
         $existingSwipe = $user->swipes()
             ->where('target_user_id', $request->target_user_id)
             ->first();
@@ -387,13 +386,11 @@ class UserController extends Controller
             return response()->json(['message' => 'You have already swiped on this user'], 409);
         }
         
-        // Record the swipe
         $swipe = $user->swipes()->create([
             'target_user_id' => $request->target_user_id,
             'action' => $request->action
         ]);
         
-        // Check for a match
         if ($request->action === 'like') {
             $mutualLike = Swipe::where('user_id', $request->target_user_id)
                 ->where('target_user_id', $user->id)
@@ -401,7 +398,6 @@ class UserController extends Controller
                 ->first();
             
             if ($mutualLike) {
-                // Create a match
                 Matches::create([
                     'user1_id' => $user->id,
                     'user2_id' => $request->target_user_id
@@ -430,8 +426,7 @@ class UserController extends Controller
         }
         
         $matches = $user->matches()->with(['user1', 'user2'])->get();
-        
-        // Format the matches to always show the other user
+
         $formattedMatches = $matches->map(function($match) use ($user) {
             $otherUser = $match->user1_id === $user->id ? $match->user2 : $match->user1;
             return [
@@ -454,7 +449,6 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         
-        // Find the match ensuring the current user is part of it
         $match = Matches::where('id', $matchId)
             ->where(function ($query) use ($user) {
                 $query->where('user1_id', $user->id)
@@ -466,14 +460,12 @@ class UserController extends Controller
             return response()->json(['message' => 'Match not found or you are not part of this match'], 404);
         }
         
-        // Delete associated conversation if it exists
-        // The conversation model has match_id, so we can find it this way
-        // Or using the relationship if you defined it on Matches model
+
         if ($match->conversation) {
-            $match->conversation->delete(); // This will also delete messages due to onDelete('cascade')
+            $match->conversation->delete(); 
         }
         
-        $match->delete(); // Delete the match itself
+        $match->delete(); 
         
         return response()->json(['message' => 'Unmatched successfully. Conversation deleted.']);
     }
@@ -485,7 +477,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Eager load necessary relations for efficiency and context
+
         $conversations = Conversation::where(function ($query) use ($user) {
                 $query->where('user1_id', $user->id)
                       ->orWhere('user2_id', $user->id);
@@ -494,14 +486,10 @@ class UserController extends Controller
                 $query->select('id', 'conversation_id', 'sender_id', 'content', 'created_at')
                       ->with('sender:id,name');
             }])
-            ->orderBy('last_message_at', 'desc') // Sort by most recent activity
+            ->orderBy('last_message_at', 'desc') 
             ->paginate(15);
 
 
-        // The 'other_participant' accessor will be automatically called if Conversation model is set up
-        // We can transform the collection if needed, but the accessor should handle it.
-        // Make sure 'other_participant' is in $appends array of Conversation model
-        // and that 'user1' and 'user2' are in $hidden if you don't want them.
 
         return response()->json($conversations);
     }
@@ -519,15 +507,14 @@ class UserController extends Controller
             return response()->json(['message' => 'Conversation not found'], 404);
         }
 
-        // Authorize: Check if the current user is part of this conversation
         if ($conversation->user1_id !== $user->id && $conversation->user2_id !== $user->id) {
             return response()->json(['message' => 'Forbidden. You are not part of this conversation.'], 403);
         }
 
         $messages = $conversation->messages()
-            ->with('sender:id,name') // Eager load sender details
+            ->with('sender:id,name') 
             ->orderBy('created_at', 'asc')
-            ->paginate(20); // Paginate messages
+            ->paginate(20); 
 
         return response()->json($messages);
     }
@@ -553,20 +540,17 @@ class UserController extends Controller
             return response()->json(['message' => 'Match not found'], 404);
         }
 
-        // Authorize: Check if the current user is part of this match
         if ($match->user1_id !== $user->id && $match->user2_id !== $user->id) {
             return response()->json(['message' => 'Forbidden. You are not part of this match.'], 403);
         }
 
-        // Determine user1_id and user2_id consistently for conversation uniqueness
-        // Smaller ID first is a common convention
         $u1_id = min($match->user1_id, $match->user2_id);
         $u2_id = max($match->user1_id, $match->user2_id);
 
-        // Find or create the conversation
+        
         $conversation = Conversation::firstOrCreate(
             [
-                'match_id' => $match->id, // Link to the match
+                'match_id' => $match->id, 
                 'user1_id' => $u1_id,
                 'user2_id' => $u2_id,
             ]
@@ -577,15 +561,10 @@ class UserController extends Controller
             'content' => $request->content,
         ]);
         
-        // Update last_message_at on conversation for sorting
         $conversation->last_message_at = $message->created_at;
         $conversation->save();
 
-        $message->load('sender:id,name'); // Eager load sender for the response
-
-        // Here you would typically broadcast an event for real-time chat
-        // event(new NewMessageSent($message));
-
+        $message->load('sender:id,name');
         return response()->json($message, 201);
     }
 }

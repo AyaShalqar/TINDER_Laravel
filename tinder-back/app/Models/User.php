@@ -80,7 +80,7 @@ class User extends Authenticatable
 
     public function conversations()
     {
-        // A user can be either user1 or user2 in a conversation
+        
         return $this->hasMany(Conversation::class, 'user1_id')
                     ->orWhere('user2_id', $this->id);
     }
@@ -90,17 +90,16 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'sender_id');
     }
 
-    // You might also want a direct way to get all messages a user is part of
     public function allMessages(): HasManyThrough
     {
         return $this->hasManyThrough(Message::class, Conversation::class,
-            function ($query) { // Closure for Conversation model join
+            function ($query) {
                 $query->where('user1_id', $this->id)->orWhere('user2_id', $this->id);
             },
-            'id', // Foreign key on messages table (should be conversation_id)
-            'id', // Local key on users table (id)
-            'id' // Local key on conversations table (id)
-        )->where(function ($query) { // Ensure the conversation FK is correctly referenced
+            'id', 
+            'id', 
+            'id' 
+        )->where(function ($query) { 
             $query->on('messages.conversation_id', '=', 'conversations.id');
         });
     }

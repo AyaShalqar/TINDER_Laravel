@@ -1,4 +1,4 @@
-import api from './api';
+import api from './api'; 
 
 const getProfile = async () => {
   try {
@@ -12,7 +12,7 @@ const getProfile = async () => {
 
 const updateProfile = async (profileData) => {
   try {
-    const response = await api.put('/profile', profileData);
+    const response = await api.put('/profile', profileData); 
     return response.data;
   } catch (error) {
     console.error('Update profile error:', error.response?.data || error.message);
@@ -22,7 +22,7 @@ const updateProfile = async (profileData) => {
 
 const updateBio = async (bioData) => {
   try {
-    const response = await api.post('/profile/bio', bioData);
+    const response = await api.post('/profile/bio', bioData); 
     return response.data;
   } catch (error) {
     console.error('Update bio error:', error.response?.data || error.message);
@@ -32,7 +32,7 @@ const updateBio = async (bioData) => {
 
 const updateLocation = async (locationData) => {
   try {
-    const response = await api.post('/profile/location', locationData);
+    const response = await api.post('/profile/location', locationData); 
     return response.data;
   } catch (error) {
     console.error('Update location error:', error.response?.data || error.message);
@@ -40,9 +40,9 @@ const updateLocation = async (locationData) => {
   }
 };
 
-const uploadImage = async (formData) => { // Expects FormData
+const uploadImage = async (formData) => { 
   try {
-    const response = await api.post('/profile/images', formData, {
+    const response = await api.post('/profile/images', formData, { 
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -56,7 +56,8 @@ const uploadImage = async (formData) => { // Expects FormData
 
 const deleteImage = async (imageId) => {
   try {
-    const response = await api.delete(`/profile/image/${imageId}`);
+    
+    const response = await api.delete(`/profile/images/${imageId}`); 
     return response.data;
   } catch (error) {
     console.error('Delete image error:', error.response?.data || error.message);
@@ -64,9 +65,10 @@ const deleteImage = async (imageId) => {
   }
 };
 
-const addInterests = async (interestIds) => { // Expects { interests: [id1, id2] }
+const addInterests = async (interestIds) => { 
   try {
-    const response = await api.post('/profile/interests', { interests: interestIds });
+   
+    const response = await api.post('/profile/interests', { interests: interestIds }); 
     return response.data;
   } catch (error) {
     console.error('Add interests error:', error.response?.data || error.message);
@@ -74,9 +76,10 @@ const addInterests = async (interestIds) => { // Expects { interests: [id1, id2]
   }
 };
 
-const removeInterests = async (interestIds) => { // Expects { interests: [id1, id2] }
+const removeInterests = async (interestIds) => { 
   try {
-    const response = await api.delete('/profile/interests', { data: { interests: interestIds } });
+   
+    const response = await api.delete('/profile/interests', { data: { interests: interestIds } }); 
     return response.data;
   } catch (error) {
     console.error('Remove interests error:', error.response?.data || error.message);
@@ -84,22 +87,10 @@ const removeInterests = async (interestIds) => { // Expects { interests: [id1, i
   }
 };
 
-// IMPORTANT: You need an endpoint in your Laravel backend to get all available interests
-// For example: GET /api/interests
 const getAllAvailableInterests = async () => {
   try {
-    // const response = await api.get('/interests'); // UNCOMMENT WHEN YOU HAVE THIS ENDPOINT
-    // return response.data.interests;
-    // MOCK DATA:
-    console.warn("Using MOCK data for getAllAvailableInterests. Implement GET /api/interests in your backend.");
-    return Promise.resolve([
-      { id: 1, name: 'Photography' },
-      { id: 2, name: 'Traveling' },
-      { id: 3, name: 'Cooking' },
-      { id: 4, name: 'Sports' },
-      { id: 5, name: 'Music' },
-      { id: 6, name: 'Reading' },
-    ]);
+    const response = await api.get('/interests'); 
+    return response.data.interests; 
   } catch (error) {
     console.error('Get all interests error:', error.response?.data || error.message);
     throw error.response?.data || new Error('Failed to fetch all interests');
@@ -108,9 +99,8 @@ const getAllAvailableInterests = async () => {
 
 const getRecommendations = async () => {
   try {
-    const response = await api.get('/recommendations');
-    console.log(response.data);
-    return response.data; // Assuming this returns an array of user objects
+    const response = await api.get('/recommendations'); 
+    return response.data;
   } catch (error) {
     console.error('Get recommendations error:', error.response?.data || error.message);
     throw error.response?.data || new Error('Failed to fetch recommendations');
@@ -118,7 +108,7 @@ const getRecommendations = async () => {
 };
 
 
-export default {
+const userService = { 
   getProfile,
   updateProfile,
   updateBio,
@@ -129,4 +119,7 @@ export default {
   removeInterests,
   getAllAvailableInterests,
   getRecommendations,
+
 };
+
+export default userService; 

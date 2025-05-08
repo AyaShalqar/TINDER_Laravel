@@ -36,20 +36,18 @@ class SwipeController extends Controller
 
        // 3. Отправляем сообщение в Kafka
        try {
-        // Сначала создаем "строителя" без аргументов
+
         $producerBuilder = Kafka::publish()
              ->onTopic('user_swipes')         
              ->withBody($messagePayload)      
              ->withKafkaKey((string)$swiperUserId); 
 
-        // Отправляем настроенное сообщение
         $producerBuilder->send();
 
         Log::info('Swipe message sent to Kafka', $messagePayload); 
 
     } catch (\Exception $e) {
         Log::error('Failed to send swipe message to Kafka: ' . $e->getMessage(), $messagePayload);
-        // Возвращаем ошибку, если не удалось отправить в Kafka
         return response()->json(['message' => 'Failed to process swipe, please try again later.'], 500);
     }
 

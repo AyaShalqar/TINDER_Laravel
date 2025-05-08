@@ -20,9 +20,7 @@ class Profile extends Model
         'location',
     ];
 
-    /**
-     * Get the user that owns the profile.
-     */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
